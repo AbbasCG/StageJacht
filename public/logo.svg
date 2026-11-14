@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f6fe0"/>
+      <stop offset="0.55" stop-color="#1d4fb8"/>
+      <stop offset="1" stop-color="#0f2f78"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.22" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.06"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#06163d" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="114" fill="url(#glow)"/>
+  <g filter="url(#sh)">
+    <!-- handvat -->
+    <path d="M318 318 L398 398" stroke="#ffffff" stroke-width="46" stroke-linecap="round"/>
+    <!-- lens -->
+    <circle cx="228" cy="228" r="118" fill="url(#lens)" stroke="#ffffff" stroke-width="36"/>
+    <!-- vinkje -->
+    <path d="M172 232 L214 274 L290 190" fill="none" stroke="#5ef0a6" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

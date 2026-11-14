@@ -1,0 +1,17 @@
+# Lokale PostgreSQL voor Stagejacht:  docker compose up -d
+# Het schema wordt bij de eerste start automatisch aangemaakt.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stagejacht
+      POSTGRES_PASSWORD: stagejacht
+      POSTGRES_DB: stagejacht
+    ports:
+      - "127.0.0.1:5432:5432"      # alleen bereikbaar vanaf je eigen computer
+    volumes:
+      - stagejacht-db:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+volumes:
+  stagejacht-db:
