@@ -33,11 +33,12 @@ export default function Login() {
     <main className="login">
       <aside className="login-merk" aria-hidden="true">
         <img src="/logo.svg" alt="" width="64" height="64" style={{ borderRadius: 14 }} />
-        <h2>Houd je stagezoektocht bij op één plek</h2>
+        <h2>Je stagezoektocht, overzichtelijk op één plek</h2>
         <ul>
-          <li>Zie in één blik wie nog moet antwoorden</li>
-          <li>Mails die bij jou passen, door jou gecontroleerd</li>
+          <li>Direct inzicht in de status per bedrijf</li>
+          <li>Mails die jij controleert en zelf verstuurt</li>
           <li>Advies bij elke reactie van een bedrijf</li>
+          <li>Versleutelde opslag en beveiligde sessies</li>
         </ul>
       </aside>
       <div className="login-form">
@@ -46,7 +47,7 @@ export default function Login() {
           <img src="/logo.svg" alt="" width="36" height="36" style={{ borderRadius: 9 }} />Stagejacht
         </Link>
         <h1>Inloggen of account maken</h1>
-        <p className="sub">Log in met je Google-account. Bestaat je account nog niet, dan maken we hem meteen aan.</p>
+        <p className="sub">Log in met je Google-account. Heb je nog geen account, dan wordt dit automatisch aangemaakt.</p>
         <label className="check" style={{ textAlign: "left" }}>
           <input type="checkbox" checked={akkoord} onChange={(e) => setAkkoord(e.target.checked)} />
           <span>Ik ga akkoord met de <Link href="/voorwaarden">voorwaarden</Link> en de <Link href="/privacy">privacyverklaring</Link>. Ben ik jonger dan 16, dan heb ik toestemming van mijn ouder.</span>
@@ -63,7 +64,7 @@ export default function Login() {
           </form>
         )}
         {fout && <p className="pin-err" role="alert">{fout}</p>}
-        <p className="note">Je Gmail koppelen doe je later apart. Dat is nodig om mails te versturen en reacties te checken.</p>
+        <p className="note">Het koppelen van Gmail gebeurt later, apart en alleen met jouw toestemming. Dit is nodig om mails te versturen en reacties te herkennen.</p>
       </div>
       </div>
     </main>
