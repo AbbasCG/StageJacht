@@ -63,3 +63,7 @@ npm run cron:vacatures     # nieuwe vacatures zoeken
 - *"ECONNREFUSED 5432"*: de database draait niet. Start `docker compose up -d`.
 - *Google zegt "redirect_uri_mismatch"*: het adres in Google Cloud moet precies `http://localhost:3000/auth/callback` zijn.
 - *Gmail koppelen mislukt*: Gmail werkt alleen met echte Google-inloggegevens, niet met de testlogin.
+
+## Bijwerken van een bestaande database
+
+Is de database al eerder aangemaakt? Draai dan één keer `npm run db:init`. Dat is veilig en past onder meer de nieuwe limiet van 3 bedrijven voor het gratis abonnement toe. Bestaande gegevens blijven staan.

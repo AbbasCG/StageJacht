@@ -37,7 +37,7 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
       naam: v.bedrijf, plaats: v.plaats, link: v.link, contact: v.contact, email: v.email, tel: v.tel,
       status: "todo", datum: today(), notes: v.functie ? "Vacature: " + v.functie : null,
     });
-    if (error) { toast(String(error.message).includes("LIMIET_BEDRIJVEN") ? "Je lijst is vol (Gratis: 5 bedrijven). Upgrade voor meer." : "Toevoegen lukte niet"); return; }
+    if (error) { toast(String(error.message).includes("LIMIET_BEDRIJVEN") ? "Je lijst is vol (Gratis: 3 bedrijven). Upgrade voor meer." : "Toevoegen lukte niet"); return; }
     await dbc.from("vacatures").update({ toegevoegd: true }).eq("id", v.id).eq("user_id", user.id);
     toast("Toegevoegd aan je lijst");
     loadVacatures(); loadBedrijven();
