@@ -32,7 +32,7 @@ export const POST = metGebruiker(async (req, { user }) => {
   if (!bedrijf && !vacature) return fout("Bedrijf niet gevonden.", 404);
 
   // Bijlagen: het eigen cv uit opslag, plus eventueel één extra bestand (max 2,5 MB;
-  // Vercel accepteert verzoeken tot 4,5 MB en base64 maakt bestanden ~33% groter)
+  // verzoeken kunnen niet te groot zijn en base64 maakt bestanden ~33% groter)
   const attachments = [];
   if (cvMee && profiel.cv_bestand) {
     let cvData;
