@@ -162,3 +162,82 @@ img { max-width: 100%; }
 .zoekt-box { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
 .zoekt-box summary { cursor: pointer; font-weight: 700; font-size: 14px; }
 .zoekt-box[open] summary { margin-bottom: 8px; }
+
+/* ─── Formelere uitstraling (overschrijft het voorgaande) ─── */
+:root { --blauw-diep: #0a1d3f; --blauw: #153a78; --goud: #c9a24b; --goud-ink: #1d1500; --f-serif: "Source Serif 4", Georgia, "Times New Roman", serif; }
+.hero2 h1, .blok h2, .slot h2, .zeker h2, .login-card h1, .login-merk h2, .legal h1 { font-family: var(--f-serif); font-weight: 600; letter-spacing: -0.015em; }
+.eyebrow { margin: 0; font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--goud); }
+.eyebrow.dark { color: var(--accent); }
+.blok-kop { display: grid; gap: 10px; }
+.blok .blok-kop h2 { max-width: 28ch; }
+
+.site-head { box-shadow: 0 1px 0 rgb(255 255 255 / .08); }
+.site-nav a:not(.btn) { font-weight: 500; }
+
+.hero2 { background:
+  radial-gradient(900px 400px at 85% -10%, rgb(201 162 75 / .16), transparent 60%),
+  linear-gradient(165deg, var(--blauw-diep) 0%, var(--blauw) 100%); }
+.hero2 h1 { font-size: clamp(2rem, 4.6vw, 3.1rem); line-height: 1.14; font-weight: 600; }
+.hero2 .lead { font-size: 18px; line-height: 1.65; }
+.hero2-punten { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: rgb(255 255 255 / .8); }
+.hero2-punten li { display: inline-flex; align-items: center; gap: 7px; }
+.hero2-punten svg { color: var(--goud); flex: none; }
+
+.btn.gold { background: var(--goud); border-color: var(--goud); color: var(--goud-ink); font-weight: 700; box-shadow: 0 6px 18px -8px rgb(201 162 75 / .8); }
+.btn.gold:hover { filter: none; background: #d6b05a; }
+.cta .btn, .slot .btn, .price .btn { border-radius: 10px; }
+
+.demo { border-radius: 14px; box-shadow: 0 30px 70px -24px rgb(2 8 30 / .75), 0 0 0 1px rgb(255 255 255 / .06); }
+
+.stappen li { border-top: 0; padding: 26px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgb(10 29 63 / .04); }
+.stap-nr { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-serif); font-size: 1.25rem; font-weight: 600; background: var(--blauw-diep); color: #fff; }
+.stappen h3 { font-family: var(--f-serif); font-weight: 600; font-size: 1.2rem; }
+
+.voordelen { gap: 18px 24px; }
+.voordelen > div { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 22px 24px; }
+.voordelen dt { font-family: var(--f-serif); font-weight: 600; font-size: 1.15rem; }
+
+.zeker { background: linear-gradient(180deg, var(--blauw-diep), #071530); color: #fff; }
+.zeker-in { max-width: 1120px; margin: 0 auto; display: grid; gap: 36px; padding-block: 76px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.zeker h2 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.3rem); line-height: 1.15; max-width: 26ch; }
+.zeker-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 960px) { .zeker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .zeker-grid { grid-template-columns: minmax(0, 1fr); } .zeker-in { padding-block: 56px; } }
+.zeker-item { border: 1px solid rgb(255 255 255 / .14); background: rgb(255 255 255 / .04); border-radius: 14px; padding: 22px 20px; display: grid; gap: 8px; align-content: start; }
+.zeker-item h3 { margin: 0; font-family: var(--f-serif); font-weight: 600; font-size: 1.1rem; }
+.zeker-item p { margin: 0; font-size: 14.5px; line-height: 1.6; color: rgb(255 255 255 / .78); }
+.zeker-icoon { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: var(--goud); background: rgb(201 162 75 / .14); border: 1px solid rgb(201 162 75 / .35); margin-bottom: 4px; }
+
+.price { border-radius: 14px; box-shadow: 0 1px 2px rgb(10 29 63 / .05); }
+.price.hot { border: 2px solid var(--blauw); box-shadow: 0 22px 44px -26px rgb(10 29 63 / .55); }
+.price h3 { font-family: var(--f-serif); font-weight: 600; font-size: 1.3rem; }
+.price .amount { font-family: var(--f-serif); font-weight: 600; }
+.price ul { list-style: none; padding: 0; gap: 10px; }
+.price li { display: flex; gap: 9px; align-items: flex-start; line-height: 1.4; }
+.price li svg { flex: none; margin-top: 1px; color: var(--s-yes); }
+.price-flag { background: var(--blauw-diep); color: #fff; letter-spacing: .04em; }
+.price .btn.ghost { border-color: var(--line); }
+
+.faq summary { font-weight: 600; }
+.slot { background: linear-gradient(165deg, var(--blauw-diep), var(--blauw)); }
+
+.site-foot { border-top: 0; background: #071530; color: rgb(255 255 255 / .75); font-size: 14px; }
+.foot-in { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 32px; padding-block: 48px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 720px) { .foot-in { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+.foot-col { display: grid; gap: 8px; align-content: start; }
+.foot-in h2 { margin: 0 0 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--goud); font-family: var(--f-body); font-weight: 700; }
+.foot-in a { color: rgb(255 255 255 / .8); text-decoration: none; padding: 0; font-weight: 400; }
+.foot-in a:hover { color: #fff; text-decoration: underline; }
+.foot-merk p { margin: 10px 0 0; max-width: 36ch; line-height: 1.6; }
+.logo-foot { display: inline-flex; align-items: center; gap: 9px; font-family: var(--f-serif); font-weight: 600; font-size: 1.15rem; color: #fff !important; }
+.logo-foot img { border-radius: 7px; }
+.foot-onder { max-width: 1120px; margin: 0 auto; border-top: 1px solid rgb(255 255 255 / .12); padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)); font-size: 13px; color: rgb(255 255 255 / .55); }
+
+.login-merk { background: linear-gradient(165deg, var(--blauw-diep), var(--blauw)); }
+.login-merk li::before { background: var(--goud); }
+.login-card h1 { font-size: 1.75rem; }
+.google-btn { border-radius: 10px; }
+.legal h1 { font-size: 2rem; }
+.hero2 .eyebrow { font-size: 12.5px; color: var(--goud); max-width: none; }

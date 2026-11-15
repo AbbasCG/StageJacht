@@ -25,7 +25,7 @@ export default function BedrijfForm({ dbc, bedrijf, toast, go, onKlaar, loadBedr
       : await dbc.from("bedrijven").insert(data);
     setBezig(false);
     if (res.error) {
-      toast(String(res.error.message).includes("LIMIET_BEDRIJVEN") ? "Met Gratis kun je 5 bedrijven bijhouden. Upgrade voor meer." : "Opslaan lukte niet");
+      toast(String(res.error.message).includes("LIMIET_BEDRIJVEN") ? "Met Gratis kun je 3 bedrijven bijhouden. Upgrade voor meer." : "Opslaan lukte niet");
       return;
     }
     toast(bedrijf ? "Bijgewerkt" : "Toegevoegd");

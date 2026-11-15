@@ -1,6 +1,0 @@
-{
-  "crons": [
-    { "path": "/api/cron/mailcheck", "schedule": "30 7 * * *" },
-    { "path": "/api/cron/vacatures", "schedule": "0 6 * * *" }
-  ]
-}
