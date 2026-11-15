@@ -1,4 +1,4 @@
-// Lokaal draaien van de geplande taken (op Vercel gebeurde dit automatisch):
+// Draaien van de geplande taken (op de Hetzner-server via cron):
 //   npm run cron:mail        controleert de mail van alle gebruikers met Gmail
 //   npm run cron:vacatures   zoekt nieuwe vacatures
 // Plan ze met cron (Linux/Mac) of Taakplanner (Windows). De app moet dan draaien.
