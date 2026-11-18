@@ -7,7 +7,7 @@ import { checkMailVoor, meldReacties } from "@/lib/mailcheck";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-// Draait elke dag (zie vercel.json). Verwerkt gebruikers die het langst niet gecheckt zijn eerst,
+// Draait elke dag (geplant via cron, zie scripts/cron.mjs). Verwerkt gebruikers die het langst niet gecheckt zijn eerst,
 // tot de tijd bijna op is. Bij veel gebruikers: vaker laten draaien of een wachtrij gebruiken.
 export async function GET(request) {
   if (!cronToegestaan(request)) return NextResponse.json({ ok: false }, { status: 401 });

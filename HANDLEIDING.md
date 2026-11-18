@@ -12,7 +12,7 @@ Deze handleiding brengt Stagejacht van deze code naar een echte website op je ei
 |---|---|---|
 | GitHub | De code bewaren | Gratis |
 | PostgreSQL | Database | Lokaal gratis (Docker). Online: een beheerde database of eigen server |
-| Vercel | Website online zetten | Hobby gratis, **maar niet voor commercieel gebruik**. Zodra je geld vraagt: Pro, ongeveer $20 per maand |
+| Hetzner | Server (VPS) waar de website en de database op draaien | Vanaf ongeveer €4–5 per maand, afhankelijk van de server |
 | Google Cloud | Inloggen met Google en Gmail | Gratis. Voor Gmail *lezen* is wel een jaarlijkse beveiligingskeuring nodig (zie stap 3) |
 | Anthropic | De AI | Betalen per gebruik, ongeveer €0,01–0,05 per AI-actie |
 | Mollie | Abonnementen en iDEAL | Geen vaste kosten, ongeveer €0,29–0,32 per betaling |
@@ -34,7 +34,7 @@ Op je computer heb je **Node.js 20** nodig (nodejs.org) om lokaal te testen.
 ## 2. Database (PostgreSQL)
 
 Stagejacht gebruikt **PostgreSQL**. Lokaal draai je hem met Docker; online kun je een beheerde database nemen
-(bijvoorbeeld Neon, Railway of Supabase als gewone Postgres, of je eigen server).
+(bijvoorbeeld Neon of Supabase als gewone Postgres), of je draait hem op je eigen Hetzner-server.
 
 **Lokaal (aanbevolen):**
 1. Installeer Docker Desktop (docker.com).
@@ -44,9 +44,9 @@ Stagejacht gebruikt **PostgreSQL**. Lokaal draai je hem met Docker; online kun j
 **Zonder Docker:** installeer PostgreSQL 14 of nieuwer, maak een lege database en zet de verbinding in `DATABASE_URL`. Draai daarna `npm run db:init`
 (of `psql "$DATABASE_URL" -f db/schema.sql`).
 
-**Online:** maak bij je databasebedrijf een Postgres-database (EU-regio), zet de verbindings-URL in `DATABASE_URL` en draai `npm run db:init`.
-Cv-bestanden staan in de map `UPLOAD_DIR` op de server. Kies online dus een hosting met een vaste schijf (een VPS, Railway of Fly.io met volume),
-niet Vercel: daar verdwijnen bestanden bij elke nieuwe versie.
+**Online (Hetzner):** draai PostgreSQL op de server zelf (bijvoorbeeld met `docker compose up -d`; poort 5432 luistert daarin alleen op `127.0.0.1`), of gebruik een beheerde database (EU-regio). Zet de verbindings-URL in `DATABASE_URL` en draai `npm run db:init`.
+Cv-bestanden staan in de map `UPLOAD_DIR` op de server. Een Hetzner-server heeft een vaste schijf, dus die blijven bij een nieuwe versie bewaard.
+Zet `UPLOAD_DIR` buiten de projectmap, zodat een `git pull` er niets aan verandert.
 
 **Back-up:** `pg_dump "$DATABASE_URL" > back-up.sql`, en bewaar ook de map `UPLOAD_DIR`.
 
@@ -121,22 +121,29 @@ Prijzen en limieten pas je aan in `lib/plans.js`.
 
 ---
 
-## 7. Vercel (website online)
+## 7. Hetzner (website online)
 
-1. Ga naar vercel.com, log in met GitHub en kies **Add New → Project →** je repository.
-2. Zet bij **Environment Variables** alle regels uit `.env.local`. Gebruik voor `NEXT_PUBLIC_SITE_URL` je Vercel-adres, en later je domein.
-3. Klik op **Deploy**.
-4. De geplande taken uit `vercel.json` (mailcheck en vacatures zoeken) draaien vanzelf, één keer per dag. Vaker kan alleen met Vercel Pro.
+1. Maak bij hetzner.com een Cloud-server (Ubuntu LTS, EU-locatie) en zet je SSH-sleutel erop. Installeer Node.js 20, Git en `pm2` (en Docker als je de database daarmee draait).
+2. Haal de code op met `git clone https://github.com/AbbasCG/StageJacht.git` en kies de gewenste branch (`git checkout dev` of `main`). Maak `.env.local` op de server met alle regels uit stap 6. Gebruik voor `NEXT_PUBLIC_SITE_URL` je domein.
+3. Bouw en start de site met `npm ci`, `npm run build` en `pm2 start npm --name stagejacht -- start`. Daarna `pm2 save` en `pm2 startup`, zodat hij na een herstart weer opstart.
+   Zet er een reverse proxy voor (Nginx of Caddy) die `https://jouwdomein.nl` doorstuurt naar `localhost:3000`, met een gratis HTTPS-certificaat (Certbot of Caddy). Laat in de firewall alleen poort 22, 80 en 443 open.
+   Nieuwe versie live zetten: `git pull`, `npm ci`, `npm run build`, `pm2 restart stagejacht`.
+4. De geplande taken (mailcheck en vacatures zoeken) draaien niet vanzelf. Plan ze met `cron` op de server (`crontab -e`). Zet `CRON_SECRET` en `CRON_BASE_URL` (bijvoorbeeld `http://localhost:3000`) in `.env.local`:
+   ```
+   0 6 * * *   cd /pad/naar/stagejacht && npm run cron:vacatures
+   30 7 * * *  cd /pad/naar/stagejacht && npm run cron:mail
+   ```
+   Je kunt ze zo vaak laten draaien als je wilt.
 
 ---
 
 ## 8. Je eigen domein
 
 1. Koop een domein, bijvoorbeeld bij TransIP, Versio of Hostnet.
-2. Ga in Vercel naar **Project → Settings → Domains** en voeg `jouwdomein.nl` en `www.jouwdomein.nl` toe.
-3. Vercel laat zien welke DNS-records je bij je domeinbedrijf moet zetten. Meestal is dat een **A-record** voor `@` en een **CNAME** voor `www`.
+2. Zet bij je domeinbedrijf een **A-record** voor `@` en een **A-record** of **CNAME** voor `www` naar het IP-adres van je Hetzner-server.
+3. Zet het domein in de configuratie van Nginx of Caddy en vraag het HTTPS-certificaat aan.
 4. Werk daarna bij:
-   - `NEXT_PUBLIC_SITE_URL` in Vercel, en klik op **Redeploy**;
+   - `NEXT_PUBLIC_SITE_URL` in `.env.local`, daarna `npm run build` en `pm2 restart stagejacht`;
    - Google: de JavaScript origins en de domeinen op het toestemmingsscherm.
 
 ---
@@ -156,12 +163,12 @@ Loop deze lijst na:
 - [ ] Cv uploaden (PDF en Word), AI-advies, editor, PDF downloaden, "Gebruik dit cv voor mijn mails"
 - [ ] AI-mail schrijven, nakijken en **naar jezelf** versturen, met cv-bijlage
 - [ ] Reactie-check: stuur jezelf vanaf een ander adres een "afwijzing" en tik op Check mijn mail
-- [ ] Abonnement afsluiten met een Mollie-testbetaling (op de Vercel-site, niet localhost) → plan wordt Pro
+- [ ] Abonnement afsluiten met een Mollie-testbetaling (op de live site, niet localhost) → plan wordt Pro
 - [ ] Opzeggen → je houdt het plan tot het einde van de maand
 - [ ] Gmail loskoppelen, account verwijderen
 - [ ] Op je telefoon: **Toevoegen aan beginscherm**, dan opent de app zonder adresbalk
 
-Gaat er iets mis, kijk dan in Vercel → **Logs**.
+Gaat er iets mis, kijk dan in de logs op de server met `pm2 logs stagejacht`.
 
 ---
 
@@ -185,7 +192,7 @@ De website is al een installeerbare app (PWA). Wil je in de stores:
 
 ## 12. Kosten en prijs: een rekenvoorbeeld
 
-Een Pro-gebruiker gebruikt ongeveer 40 AI-acties en 30 dagelijkse mailchecks per maand. Dat kost je grofweg €0,50 tot €1,50 aan AI. Mollie rekent ongeveer €0,30 per betaling. Bij €3,99 per maand houd je dan ongeveer €2 tot €3 over per gebruiker. Daar gaan nog de vaste kosten van af, zoals Vercel Pro en de CASA-keuring. Controleer de echte AI-kosten in de eerste maanden via de Anthropic-console.
+Een Pro-gebruiker gebruikt ongeveer 40 AI-acties en 30 dagelijkse mailchecks per maand. Dat kost je grofweg €0,50 tot €1,50 aan AI. Mollie rekent ongeveer €0,30 per betaling. Bij €3,99 per maand houd je dan ongeveer €2 tot €3 over per gebruiker. Daar gaan nog de vaste kosten van af, zoals de Hetzner-server en de CASA-keuring. Controleer de echte AI-kosten in de eerste maanden via de Anthropic-console.
 
 ---
 
@@ -195,7 +202,7 @@ Een Pro-gebruiker gebruikt ongeveer 40 AI-acties en 30 dagelijkse mailchecks per
 - Gebruikers kunnen hun eigen abonnement of Gmail-status niet aanpassen; dat kan alleen de server.
 - Gmail-toegang wordt versleuteld opgeslagen (AES-256-GCM).
 - Mails worden alleen verstuurd na een vinkje "gecontroleerd" en een tik op Versturen.
-- Lekt er een sleutel uit, maak dan meteen een nieuwe aan bij de dienst en vervang hem in Vercel.
+- Lekt er een sleutel uit, maak dan meteen een nieuwe aan bij de dienst en vervang hem in `.env.local` op de server en herstart met `pm2 restart stagejacht`.
 
 ## 14. Wat er nog bij kan
 
