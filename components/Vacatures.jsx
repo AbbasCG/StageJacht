@@ -95,7 +95,7 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
             {v.waarom && <p className="why">{v.waarom}</p>}
             <div className="actions">
               {v.email && <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", vacature: v })}>Sollicitatiemail laten schrijven</button>}
-              <button className="btn ghost small" type="button" onClick={() => zetInLijst(v)}>Zet in mijn lijst</button>
+              <button className={"btn small" + (v.email ? " ghost" : "")} type="button" onClick={() => zetInLijst(v)}>+ Zet in mijn lijst</button>
               <button className="btn ghost small" type="button" onClick={() => verberg(v)}>Niet interessant</button>
               {safeUrl(v.link) && <a href={safeUrl(v.link)} target="_blank" rel="noopener noreferrer">Bekijk {v.bron ? "op " + v.bron : "vacature"}</a>}
             </div>

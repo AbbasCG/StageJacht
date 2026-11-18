@@ -25,6 +25,7 @@ export default function Dashboard() {
   const [view, setView] = useState("overzicht");
   const [editing, setEditing] = useState(null);
   const [groep, setGroep] = useState(null);
+  const [focusId, setFocusId] = useState(null);
   const [composer, setComposer] = useState(null);
   const [toastText, setToastText] = useState("");
   const toastTimer = useRef();
@@ -89,7 +90,7 @@ export default function Dashboard() {
 
   const go = (v) => { if (window.location.hash === "#" + v) setView(v); else window.location.hash = v; };
   const plan = effectivePlan(profile);
-  const ctx = { groep, setGroep, dbc, user, profile, plan, usage, bedrijven, vacatures, toast, go, reloadAll, loadProfile, loadBedrijven, loadVacatures, loadUsage,
+  const ctx = { groep, setGroep, focusId, setFocusId, dbc, user, profile, plan, usage, bedrijven, vacatures, toast, go, reloadAll, loadProfile, loadBedrijven, loadVacatures, loadUsage,
     openComposer: (c) => {
       if (!profile?.gmail_verbonden) { toast("Verbind eerst je Gmail bij Profiel"); go("profiel"); return; }
       setComposer(c);
@@ -98,20 +99,20 @@ export default function Dashboard() {
   };
 
   if (!loaded) {
-    return <main className="wrap"><div className="loading" style={{ justifyContent: "center", paddingTop: 80 }}><span className="spin" /><span>Stagejacht wordt geladen…</span></div></main>;
+    return <div className="app"><main className="wrap"><div className="loading" style={{ justifyContent: "center", paddingTop: 80 }}><span className="spin" /><span>Stagejacht wordt geladen…</span></div></main></div>;
   }
 
   if (profile && !profile.onboarding_klaar) {
-    return <Onboarding {...ctx} onKlaar={async () => { await loadProfile(); go("overzicht"); }} />;
+    return <div className="app"><Onboarding {...ctx} onKlaar={async () => { await loadProfile(); go("overzicht"); }} /></div>;
   }
 
   const naam = profile?.naam || user?.user_metadata?.full_name || "";
 
   return (
-    <>
+    <div className="app">
       <div className="bar">
         <div className="bar-in">
-          <a className="brand-wrap" href="#overzicht" aria-label="Stagejacht, naar het overzicht"><img className="logo" src="/logo.svg" alt="" width="38" height="38" /><div className="brand">Stagejacht<small>{naam ? `Ingelogd als ${naam}` : "Je stage-zoektocht op één plek"}</small></div></a>
+          <a className="brand-wrap" href="#overzicht" aria-label="Stagejacht, naar het overzicht"><img className="logo" src="/logo.svg" alt="" width="38" height="38" /><div className="brand">Stagejacht<small>{naam ? `Ingelogd als ${naam}` : "Je stagezoektocht op één plek"}</small></div></a>
           <Nav view={view} aantalBedrijven={bedrijven.length} aantalVacatures={vacatures.length} />
         </div>
       </div>
@@ -125,6 +126,6 @@ export default function Dashboard() {
       </main>
       {composer && <Composer {...ctx} {...composer} onClose={() => setComposer(null)} onSent={() => { setComposer(null); reloadAll(); toast("Verstuurd vanaf je Gmail"); }} />}
       <div className="toast" role="status" hidden={!toastText}>{toastText}</div>
-    </>
+    </div>
   );
 }
