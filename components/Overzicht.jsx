@@ -27,10 +27,10 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
   const bekijk = (b) => { setGroep(null); setFocusId(b.id); go("bedrijven"); };
 
   async function check() {
-    setBezig(true); setMelding("De assistent checkt je mail…");
+    setBezig(true); setMelding("Je mailbox wordt gecontroleerd…");
     try {
       const { nieuw } = await api("/api/mail/check");
-      setMelding(nieuw.length ? `${nieuw.length} nieuwe reactie${nieuw.length > 1 ? "s" : ""} gevonden. Bekijk het advies hieronder.` : "Geen nieuwe reacties gevonden.");
+      setMelding(nieuw.length ? `${nieuw.length} nieuwe reactie${nieuw.length > 1 ? "s" : ""} ontvangen. Het advies vind je hieronder.` : "Er zijn geen nieuwe reacties ontvangen.");
       await loadBedrijven();
     } catch (e) {
       setMelding(e.message);
@@ -39,9 +39,9 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
 
   let mailTekst = melding;
   if (!mailTekst) {
-    if (!plan.mailcheckHandmatig) mailTekst = "Met Pro of Premium checkt de assistent je Gmail op reacties en geeft advies.";
-    else if (!profile?.gmail_verbonden) mailTekst = "Verbind eerst je Gmail bij Profiel, dan kan de assistent je mail checken.";
-    else mailTekst = "Je Gmail wordt elke dag automatisch gecheckt. Wil je nu kijken?";
+    if (!plan.mailcheckHandmatig) mailTekst = "Met Pro of Premium wordt je Gmail automatisch gecontroleerd op reacties van bedrijven, inclusief advies voor de vervolgstap.";
+    else if (!profile?.gmail_verbonden) mailTekst = "Koppel eerst je Gmail-account via Profiel. Daarna kunnen reacties van bedrijven automatisch worden herkend.";
+    else mailTekst = "Je Gmail wordt dagelijks automatisch gecontroleerd. Je kunt ook nu direct controleren.";
   }
 
   const kop = (
@@ -51,7 +51,7 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
         <p className="sub">
           {bedrijven.length
             ? `${bedrijven.length} bedrijven benaderd · ${lopend} lopen nog${vandaag.length ? ` · ${vandaag.length} vandaag opvolgen` : ""}`
-            : "Welkom bij Stagejacht. Laten we beginnen met je eerste bedrijf."}
+            : "Welkom bij Stagejacht. Begin met het vastleggen van je eerste bedrijf."}
         </p>
       </div>
       {bedrijven.length > 0 && <button className="btn" type="button" onClick={() => go("toevoegen")}>+ Bedrijf toevoegen</button>}
@@ -64,9 +64,9 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
         {kop}
         <div className="start">
           <ol className="start-steps">
-            <li><span className="start-nr">1</span><div><b>Zet een bedrijf in je lijst</b><p>Een bedrijf waar je stage wilt lopen, of waar je al contact mee had.</p></div></li>
-            <li><span className="start-nr">2</span><div><b>Laat een mail schrijven</b><p>De AI schrijft een mail die bij jou past. Jij leest hem en verstuurt hem zelf.</p></div></li>
-            <li><span className="start-nr">3</span><div><b>Volg reacties op</b><p>Stagejacht houdt bij wie er reageert en zegt wat je daarna kunt doen.</p></div></li>
+            <li><span className="start-nr">1</span><div><b>Leg een bedrijf vast</b><p>Een organisatie waar je stage wilt lopen, of waarmee je al contact hebt gehad.</p></div></li>
+            <li><span className="start-nr">2</span><div><b>Laat een mail opstellen</b><p>Op basis van je profiel wordt een passende mail opgesteld. Jij controleert en verstuurt deze zelf.</p></div></li>
+            <li><span className="start-nr">3</span><div><b>Volg reacties op</b><p>Stagejacht registreert reacties en adviseert over de meest passende vervolgstap.</p></div></li>
           </ol>
           <div className="actions">
             <button className="btn" type="button" onClick={() => go("toevoegen")}>+ Eerste bedrijf toevoegen</button>
@@ -83,7 +83,7 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
 
       {vandaag.length > 0 && (
         <div className="box today">
-          <div className="box-kop"><h2>Vandaag te doen</h2><span className="count">{vandaag.length}</span></div>
+          <div className="box-kop"><h2>Vandaag opvolgen</h2><span className="count">{vandaag.length}</span></div>
           <ul className="rows">
             {vandaag.map((b) => {
               const s = S[b.status] || S.todo;
@@ -95,8 +95,8 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
                   </button>
                   <div className="row-acties">
                     {b.tel && <a className="btn ghost small" href={`tel:${b.tel.replace(/\s+/g, "")}`}>Bellen</a>}
-                    {b.email && !b.reactie_msgid && ["todo", "bellen"].includes(b.status) && <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", bedrijf: b })}>Mail schrijven</button>}
-                    <button className="btn ghost small" type="button" onClick={() => bekijk(b)}>Bekijk</button>
+                    {b.email && !b.reactie_msgid && ["todo", "bellen"].includes(b.status) && <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", bedrijf: b })}>Mail opstellen</button>}
+                    <button className="btn ghost small" type="button" onClick={() => bekijk(b)}>Bekijken</button>
                   </div>
                 </li>
               );
@@ -121,7 +121,7 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
         <span className="mailbar-ic"><MailIcoon /></span>
         <p className="note">{mailTekst}</p>
         {plan.mailcheckHandmatig
-          ? <button className="btn small" type="button" onClick={check} disabled={bezig || !profile?.gmail_verbonden}>{bezig ? "Bezig…" : "Check mijn mail"}</button>
+          ? <button className="btn small" type="button" onClick={check} disabled={bezig || !profile?.gmail_verbonden}>{bezig ? "Bezig met controleren…" : "Mail nu controleren"}</button>
           : <button className="btn small" type="button" onClick={() => go("profiel")}>Bekijk abonnementen</button>}
       </div>
 
@@ -135,10 +135,10 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
                 <div className="msg-head"><button type="button" className="name linkish" onClick={() => bekijk(b)}>{b.naam}</button><span className="tone" style={{ "--c": t.c }}>{t.label}</span><span className="when">{fmt(b.reactie_datum)}</span></div>
                 {b.reactie_samenvatting && <p>{b.reactie_samenvatting}</p>}
                 {b.advies && <div className="advice"><b>Advies</b>{b.advies}</div>}
-                {b.reactie_msgid && <div className="actions"><button className="btn small" type="button" onClick={() => openComposer({ soort: "reply", bedrijf: b })}>Laat AI antwoorden</button></div>}
+                {b.reactie_msgid && <div className="actions"><button className="btn small" type="button" onClick={() => openComposer({ soort: "reply", bedrijf: b })}>Antwoord laten opstellen</button></div>}
               </div>
             );
-          }) : <div className="empty small-empty">Nog geen reacties. Zodra een bedrijf antwoordt, zie je het hier met advies.</div>}
+          }) : <div className="empty small-empty">Er zijn nog geen reacties ontvangen. Zodra een bedrijf antwoordt, verschijnt de reactie hier met een advies.</div>}
         </div>
       </div>
 
@@ -159,7 +159,7 @@ export default function Overzicht({ setGroep, setFocusId, bedrijven, profile, us
               );
             })}
           </ul>
-        ) : <div className="empty small-empty">{vandaag.length ? "Verder staat er niets gepland." : "Geen openstaande bedrijven."}</div>}
+        ) : <div className="empty small-empty">{vandaag.length ? "Er staan verder geen vervolgacties gepland." : "Er zijn geen openstaande bedrijven."}</div>}
       </div>
     </section>
   );

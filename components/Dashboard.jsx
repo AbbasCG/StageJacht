@@ -64,10 +64,10 @@ export default function Dashboard() {
       setLoaded(true);
       const q = new URLSearchParams(window.location.search);
       const g = q.get("gmail");
-      if (g === "ok") toast("Gmail is verbonden");
-      if (g === "geen-toegang") toast("Gmail kreeg geen toegang. Probeer het opnieuw en sta alles toe.");
-      if (g === "fout") toast("Gmail verbinden lukte niet. Probeer het opnieuw.");
-      if (q.get("betaling") === "terug") toast("Bedankt! Je abonnement wordt geactiveerd zodra de betaling binnen is.");
+      if (g === "ok") toast("Je Gmail-account is gekoppeld");
+      if (g === "geen-toegang") toast("Er is geen toegang verleend tot Gmail. Probeer het opnieuw en sta alle gevraagde rechten toe.");
+      if (g === "fout") toast("Het koppelen van Gmail is niet gelukt. Probeer het opnieuw.");
+      if (q.get("betaling") === "terug") toast("Bedankt voor je betaling. Je abonnement wordt geactiveerd zodra de betaling is verwerkt.");
       if (g || q.get("betaling")) window.history.replaceState(null, "", window.location.pathname + window.location.hash);
       if (q.get("betaling")) setTimeout(loadProfile, 4000);
     })();
@@ -92,7 +92,7 @@ export default function Dashboard() {
   const plan = effectivePlan(profile);
   const ctx = { groep, setGroep, focusId, setFocusId, dbc, user, profile, plan, usage, bedrijven, vacatures, toast, go, reloadAll, loadProfile, loadBedrijven, loadVacatures, loadUsage,
     openComposer: (c) => {
-      if (!profile?.gmail_verbonden) { toast("Verbind eerst je Gmail bij Profiel"); go("profiel"); return; }
+      if (!profile?.gmail_verbonden) { toast("Koppel eerst je Gmail-account via Profiel"); go("profiel"); return; }
       setComposer(c);
     },
     edit: (b) => { setEditing(b); go("toevoegen"); },
@@ -124,7 +124,7 @@ export default function Dashboard() {
         {view === "toevoegen" && <BedrijfForm {...ctx} bedrijf={editing} onKlaar={() => { setEditing(null); go("bedrijven"); }} />}
         {view === "profiel" && <Profiel {...ctx} />}
       </main>
-      {composer && <Composer {...ctx} {...composer} onClose={() => setComposer(null)} onSent={() => { setComposer(null); reloadAll(); toast("Verstuurd vanaf je Gmail"); }} />}
+      {composer && <Composer {...ctx} {...composer} onClose={() => setComposer(null)} onSent={() => { setComposer(null); reloadAll(); toast("Je mail is verzonden vanaf je Gmail-account"); }} />}
       <div className="toast" role="status" hidden={!toastText}>{toastText}</div>
     </div>
   );

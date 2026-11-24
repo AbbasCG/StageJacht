@@ -26,7 +26,7 @@ export default function Bedrijven({ groep, setGroep, focusId, setFocusId, go, db
   async function verwijder(id) {
     const { error } = await dbc.from("bedrijven").delete().eq("id", id);
     setBevestig(null); setOpen(null);
-    if (error) toast("Verwijderen lukte niet"); else { toast("Verwijderd"); loadBedrijven(); }
+    if (error) toast("Het verwijderen is niet gelukt. Probeer het opnieuw."); else { toast("Het bedrijf is verwijderd"); loadBedrijven(); }
   }
 
   return (
@@ -34,7 +34,7 @@ export default function Bedrijven({ groep, setGroep, focusId, setFocusId, go, db
       <div className="toolbar">
         <div>
           <h1>Bedrijven</h1>
-          <p className="sub">Tik op een bedrijf voor details, mail en notities.</p>
+          <p className="sub">Selecteer een bedrijf om details, notities en vervolgacties te bekijken.</p>
         </div>
         <button className="btn" type="button" onClick={() => go("toevoegen")}>+ Bedrijf toevoegen</button>
       </div>
@@ -52,13 +52,13 @@ export default function Bedrijven({ groep, setGroep, focusId, setFocusId, go, db
       <div className="table">
         {!bedrijven.length ? (
           <div className="empty">
-            <p>Je lijst is nog leeg. Voeg een bedrijf toe waar je stage wilt lopen.</p>
+            <p>Je overzicht bevat nog geen bedrijven. Voeg een organisatie toe waar je stage wilt lopen.</p>
             <button className="btn" type="button" onClick={() => go("toevoegen")}>+ Eerste bedrijf toevoegen</button>
           </div>
         ) : (
           <>
             <div className="tr th"><span>Bedrijf</span><span>Contactpersoon</span><span>E-mail</span><span>Status</span><span>Opvolgen</span></div>
-            {!shown.length && <div className="empty">Geen bedrijven gevonden met deze zoekopdracht of filter.</div>}
+            {!shown.length && <div className="empty">Er zijn geen bedrijven gevonden die aan je zoekopdracht of filter voldoen.</div>}
             {shown.map((b) => {
               const s = S[b.status] || S.todo;
               const isOpen = open === b.id;
@@ -81,21 +81,21 @@ export default function Bedrijven({ groep, setGroep, focusId, setFocusId, go, db
                       <div className="links">
                         {b.tel && <a href={`tel:${b.tel.replace(/\s+/g, "")}`}>Bel {b.tel}</a>}
                         {b.datum && <span>Laatste contact: {fmt(b.datum)}</span>}
-                        {url && <a href={url} target="_blank" rel="noopener noreferrer">Vacature / website</a>}
+                        {url && <a href={url} target="_blank" rel="noopener noreferrer">Vacature of website bekijken</a>}
                       </div>
                       {b.reactie_samenvatting && <p className="notes"><b>Reactie ({(TONE[b.reactie_soort] || TONE.neutraal).label.toLowerCase()}, {fmt(b.reactie_datum)}):</b> {b.reactie_samenvatting}</p>}
                       {b.advies && <div className="advice"><b>Advies</b>{b.advies}</div>}
                       {b.notes && <p className="notes">{b.notes}</p>}
                       {bevestig === b.id ? (
-                        <div className="actions">{b.naam} verwijderen?
+                        <div className="actions">Weet je zeker dat je {b.naam} wilt verwijderen?
                           <button className="btn danger small" type="button" onClick={() => verwijder(b.id)}>Verwijderen</button>
                           <button className="btn ghost small" type="button" onClick={() => setBevestig(null)}>Annuleren</button>
                         </div>
                       ) : (
                         <div className="actions">
                           {b.reactie_msgid
-                            ? <button className="btn small" type="button" onClick={() => openComposer({ soort: "reply", bedrijf: b })}>Laat AI antwoorden</button>
-                            : b.email ? <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", bedrijf: b })}>Mail laten schrijven</button> : null}
+                            ? <button className="btn small" type="button" onClick={() => openComposer({ soort: "reply", bedrijf: b })}>Antwoord laten opstellen</button>
+                            : b.email ? <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", bedrijf: b })}>Mail laten opstellen</button> : null}
                           <button className="btn ghost small" type="button" onClick={() => edit(b)}>Bewerken</button>
                           <button className="btn ghost small" type="button" onClick={() => setBevestig(b.id)}>Verwijderen</button>
                         </div>

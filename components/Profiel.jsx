@@ -4,7 +4,7 @@ import { PLANS } from "@/lib/plans";
 import { api } from "@/lib/ui";
 
 // Knop om Gmail te koppelen (ook gebruikt in de welkomststappen)
-export function GmailKnop({ label = "Verbind Gmail" }) {
+export function GmailKnop({ label = "Gmail koppelen" }) {
   const [bezig, setBezig] = useState(false);
   async function koppel() {
     setBezig(true);
@@ -40,7 +40,7 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
   async function opslaan(e) {
     e.preventDefault();
     const { error } = await dbc.from("profiles").update({ ...f, maxafstand: Number(f.maxafstand || 15) }).eq("id", user.id);
-    if (error) toast("Opslaan lukte niet"); else { toast("Profiel opgeslagen"); loadProfile(); }
+    if (error) toast("Het opslaan is niet gelukt. Probeer het opnieuw."); else { toast("Je profiel is opgeslagen"); loadProfile(); }
   }
   async function kies(planId) {
     setBezig(planId);
@@ -51,12 +51,12 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
     setBezig("opzeggen");
     try {
       const { tot } = await api("/api/billing/cancel");
-      toast(`Opgezegd. Je houdt ${plan.naam} tot ${new Date(tot).toLocaleDateString("nl-NL")}.`);
+      toast(`Je abonnement is opgezegd. ${plan.naam} blijft actief tot ${new Date(tot).toLocaleDateString("nl-NL")}.`);
       setOpzeggen(false); loadProfile();
     } catch (e) { toast(e.message); } finally { setBezig(""); }
   }
   async function ontkoppel() {
-    try { await api("/api/gmail/disconnect"); toast("Gmail losgekoppeld"); loadProfile(); } catch (e) { toast(e.message); }
+    try { await api("/api/gmail/disconnect"); toast("Je Gmail-account is ontkoppeld"); loadProfile(); } catch (e) { toast(e.message); }
   }
   async function verwijderAccount() {
     setBezig("verwijderen");
@@ -72,7 +72,7 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
     <section className="view">
       <div>
         <h1>Profiel en instellingen</h1>
-        <p className="sub">Je account, abonnement, Gmail en gegevens.</p>
+        <p className="sub">Beheer je account, abonnement, Gmail-koppeling en persoonlijke gegevens.</p>
       </div>
 
       <div className="box">
@@ -94,7 +94,7 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
           <p className="note">
             {p.mollie_subscription_id
               ? `Wordt automatisch verlengd. Volgende afschrijving rond ${new Date(p.plan_tot).toLocaleDateString("nl-NL")}.`
-              : `Opgezegd. Je houdt ${plan.naam} tot ${new Date(p.plan_tot).toLocaleDateString("nl-NL")}.`}
+              : `Opgezegd. ${plan.naam} blijft actief tot ${new Date(p.plan_tot).toLocaleDateString("nl-NL")}.`}
           </p>
         )}
         <div className="plan-row">
@@ -105,11 +105,11 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
               <ul className="note" style={{ margin: 0, paddingLeft: 18 }}>{pl.voordelen.map((v) => <li key={v}>{v}</li>)}</ul>
               {pl.id === plan.id ? <span className="tag">Je huidige abonnement</span>
                 : pl.id === "free" ? null
-                : <button className="btn small" type="button" onClick={() => kies(pl.id)} disabled={!!bezig}>{bezig === pl.id ? "Even geduld…" : isBetaald ? `Overstappen naar ${pl.naam}` : `Kies ${pl.naam}`}</button>}
+                : <button className="btn small" type="button" onClick={() => kies(pl.id)} disabled={!!bezig}>{bezig === pl.id ? "Een moment geduld…" : isBetaald ? `Overstappen naar ${pl.naam}` : `${pl.naam} kiezen`}</button>}
             </div>
           ))}
         </div>
-        <p className="note">Betalen met iDEAL, daarna maandelijkse automatische incasso via Mollie. Overstappen start een nieuwe maand. Maandelijks opzegbaar.</p>
+        <p className="note">De eerste betaling verloopt via iDEAL; daarna wordt het bedrag maandelijks automatisch afgeschreven via Mollie. Bij overstappen start een nieuwe periode. Maandelijks opzegbaar.</p>
         {isBetaald && p.mollie_subscription_id && (
           opzeggen ? (
             <div className="actions">Weet je het zeker? Je houdt {plan.naam} tot het einde van de betaalde maand.
@@ -121,18 +121,18 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
       </div>
 
       <div className="box">
-        <h2>Gmail</h2>
+        <h2>Gmail-koppeling</h2>
         <div className="connect-state" style={{ "--c": p.gmail_verbonden ? "var(--s-yes)" : "var(--s-todo)" }}>
-          <span className="dot" /><span>{p.gmail_verbonden ? `Verbonden${p.gmail_adres ? " met " + p.gmail_adres : ""}` : "Nog niet verbonden"}</span>
+          <span className="dot" /><span>{p.gmail_verbonden ? `Gekoppeld${p.gmail_adres ? " met " + p.gmail_adres : ""}` : "Nog niet gekoppeld"}</span>
         </div>
         {p.gmail_verbonden
-          ? <div className="actions"><button className="btn ghost small" type="button" onClick={ontkoppel}>Gmail loskoppelen</button></div>
+          ? <div className="actions"><button className="btn ghost small" type="button" onClick={ontkoppel}>Gmail ontkoppelen</button></div>
           : <GmailKnop />}
-        <p className="note">Stagejacht leest alleen mails van bedrijven uit jouw lijst en verstuurt alleen mails waar jij zelf op Versturen tikt. Loskoppelen trekt de toegang direct in bij Google.</p>
+        <p className="note">Stagejacht leest uitsluitend mails van bedrijven uit je overzicht en verstuurt alleen mails die jij zelf bevestigt. Bij ontkoppelen wordt de toegang direct bij Google ingetrokken.</p>
       </div>
 
       <form className="box" onSubmit={opslaan}>
-        <h2>Mijn profiel</h2>
+        <h2>Persoonlijke gegevens</h2>
         <div className="grid2">
           <label className="q"><span>Naam</span><input value={f.naam || ""} onChange={set("naam")} required /></label>
           <label className="q"><span>Opleiding</span><input value={f.opleiding || ""} onChange={set("opleiding")} /></label>
@@ -142,12 +142,12 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
           <label className="q"><span>Leerweg</span><select value={f.leerweg || "BOL"} onChange={set("leerweg")}><option value="BOL">BOL</option><option value="BBL">BBL</option></select></label>
           <label className="q"><span>Crebocode <em>(optioneel)</em></span><input value={f.crebocode || ""} onChange={set("crebocode")} inputMode="numeric" placeholder="5 cijfers" /></label>
           <label className="q"><span>Telefoonnummer</span><input value={f.telefoon || ""} onChange={set("telefoon")} type="tel" autoComplete="tel" placeholder="06 …" /></label>
-          <label className="q"><span>E-mailadres <em>(komt onder je mails)</em></span><input value={f.email || ""} onChange={set("email")} type="email" /></label>
-          <label className="q"><span>Wanneer kun je beginnen?</span><input value={f.beschikbaar || ""} onChange={set("beschikbaar")} placeholder="Bijv. per direct" /></label>
-          <label className="q"><span>Hoe ver wil je reizen?</span><select value={f.maxafstand || "15"} onChange={set("maxafstand")}>{["5", "10", "15", "25", "40"].map((k) => <option key={k} value={k}>Max {k} km</option>)}</select></label>
-          <label className="q span2"><span>Waar ben je goed in? <em>(sterke punten, vaardigheden)</em></span><textarea value={f.sterk || ""} onChange={set("sterk")} /></label>
-          <label className="q span2"><span>Ervaring, projecten en bijbanen</span><textarea value={f.ervaring || ""} onChange={set("ervaring")} /></label>
-          <label className="q span2"><span>Over mij <em>(wat kun je, waar ben je goed in, wat wil je leren?)</em></span><textarea value={f.overmij || ""} onChange={set("overmij")} /></label>
+          <label className="q"><span>E-mailadres <em>(wordt onder je mails vermeld)</em></span><input value={f.email || ""} onChange={set("email")} type="email" /></label>
+          <label className="q"><span>Beschikbaar vanaf</span><input value={f.beschikbaar || ""} onChange={set("beschikbaar")} placeholder="Bijv. per direct" /></label>
+          <label className="q"><span>Maximale reisafstand</span><select value={f.maxafstand || "15"} onChange={set("maxafstand")}>{["5", "10", "15", "25", "40"].map((k) => <option key={k} value={k}>Max {k} km</option>)}</select></label>
+          <label className="q span2"><span>Sterke punten <em>(kwaliteiten en vaardigheden)</em></span><textarea value={f.sterk || ""} onChange={set("sterk")} /></label>
+          <label className="q span2"><span>Werkervaring, projecten en bijbanen</span><textarea value={f.ervaring || ""} onChange={set("ervaring")} /></label>
+          <label className="q span2"><span>Over mij <em>(wie je bent en wat je wilt leren)</em></span><textarea value={f.overmij || ""} onChange={set("overmij")} /></label>
         </div>
         <div className="actions"><button className="btn small" type="submit">Profiel opslaan</button></div>
       </form>
@@ -158,14 +158,14 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
           ? <div className="actions"><button className="btn small" type="button" onClick={async () => { installPrompt.prompt(); await installPrompt.userChoice; setInstallPrompt(null); }}>Installeer de app</button></div>
           : null}
         <div className="steps">
-          <div><b>iPhone (Safari)</b><ol className="note"><li>Tik op Deel (vierkantje met pijl).</li><li>Kies Zet op beginscherm.</li><li>Tik op Voeg toe.</li></ol></div>
-          <div><b>Android (Chrome)</b><ol className="note"><li>Tik op ⋮ rechtsboven.</li><li>Kies App installeren of Toevoegen aan startscherm.</li></ol></div>
+          <div><b>iPhone (Safari)</b><ol className="note"><li>Selecteer Deel (het vierkant met de pijl).</li><li>Kies Zet op beginscherm.</li><li>Bevestig met Voeg toe.</li></ol></div>
+          <div><b>Android (Chrome)</b><ol className="note"><li>Selecteer ⋮ rechtsboven.</li><li>Kies App installeren of Toevoegen aan startscherm.</li></ol></div>
         </div>
       </div>
 
       <div className="box danger-zone">
         <h2>Account verwijderen</h2>
-        <p className="note">Dit verwijdert je account, je bedrijven, je cv en je Gmail-koppeling voor altijd. Een lopend abonnement wordt gestopt. Typ VERWIJDER om te bevestigen.</p>
+        <p className="note">Hiermee worden je account, bedrijven, cv en Gmail-koppeling definitief verwijderd. Een lopend abonnement wordt beëindigd. Typ VERWIJDER ter bevestiging.</p>
         <div className="actions">
           <input value={verwijderTekst} onChange={(e) => setVerwijderTekst(e.target.value)} placeholder="VERWIJDER" aria-label="Typ VERWIJDER" style={{ maxWidth: 200 }} />
           <button className="btn danger small" type="button" disabled={verwijderTekst !== "VERWIJDER" || !!bezig} onClick={verwijderAccount}>{bezig === "verwijderen" ? "Bezig…" : "Account verwijderen"}</button>

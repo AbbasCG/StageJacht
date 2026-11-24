@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PLANS } from "@/lib/plans";
 import SiteFooter from "@/components/SiteFooter";
 import HeroDemo from "@/components/HeroDemo";
+import MobielCta from "@/components/MobielCta";
 
 export const metadata = {
   title: "Overzicht en regie bij je stagezoektocht",
@@ -14,11 +15,34 @@ const STAPPEN = [
   { t: "Reacties opvolgen", d: "Stagejacht herkent een antwoord, vat het samen en geeft advies voor de volgende stap, ook bij een afwijzing." },
 ];
 
+const VERGELIJK = {
+  zonder: [
+    "Losse notities, mails en telefoonnummers op verschillende plekken",
+    "Onduidelijk wie nog moet reageren en wanneer je moet opvolgen",
+    "Steeds opnieuw een sollicitatiemail schrijven",
+    "Na een afwijzing niet weten wat de beste volgende stap is",
+  ],
+  met: [
+    "Alle bedrijven, contactpersonen en afspraken in één overzicht",
+    "Een duidelijke melding wanneer een bedrijf moet worden opgevolgd",
+    "Een persoonlijke mail binnen een minuut, door jou gecontroleerd",
+    "Bij elke reactie een concreet advies voor de vervolgstap",
+  ],
+};
+
+const IC = {
+  zoek: <><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2" /></>,
+  cv: <><path d="M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5z" /><path d="M14 3.5v5h5" /><path d="M9 13h6M9 16.5h4" /></>,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m4 7 8 6 8-6" /></>,
+  tel: <><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" /><path d="M10.5 18.5h3" /></>,
+};
+const Icoon = ({ d }) => (<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{d}</svg>);
+
 const VOORDELEN = [
-  { t: "Passende vacatures", d: "Stageplekken van Stagemarkt en het internet binnen de afstand die je zelf instelt, met aanduiding of het bedrijf erkend is." },
-  { t: "Een sterker cv", d: "Je ontvangt een beoordeling met concrete verbeterpunten. In de editor werk je het bij en download je het als pdf." },
-  { t: "Natuurlijk geformuleerde mails", d: "Een meter toont welke zinnen te stijf of te algemeen klinken. Je eigen aanvullingen blijven altijd behouden." },
-  { t: "Ook op je telefoon", d: "Installeer Stagejacht op je beginscherm en raadpleeg je overzicht waar je ook bent." },
+  { i: "zoek", t: "Passende vacatures", d: "Stageplekken van Stagemarkt en het internet binnen de afstand die je zelf instelt, met aanduiding of het bedrijf erkend is." },
+  { i: "cv", t: "Een sterker cv", d: "Je ontvangt een beoordeling met concrete verbeterpunten. In de editor werk je het bij en download je het als pdf." },
+  { i: "mail", t: "Natuurlijk geformuleerde mails", d: "Een meter toont welke zinnen te stijf of te algemeen klinken. Je eigen aanvullingen blijven altijd behouden." },
+  { i: "tel", t: "Ook op je telefoon", d: "Installeer Stagejacht op je beginscherm en raadpleeg je overzicht waar je ook bent." },
 ];
 
 const ZEKERHEID = [
@@ -60,8 +84,8 @@ export default function Home() {
           <div className="hero2-in">
             <div className="hero2-copy">
               <p className="eyebrow">Voor mbo-studenten op zoek naar een stageplek</p>
-              <h1>Een overzichtelijke en zorgvuldige aanpak van je stagezoektocht</h1>
-              <p className="lead">Leg bedrijven, gesprekken en reacties op één plek vast. Stagejacht helpt je met het opstellen van mails en adviseert over de volgende stap. De beslissingen blijven bij jou.</p>
+              <h1>Vind je stageplek met overzicht en vertrouwen</h1>
+              <p className="lead">Stagejacht brengt bedrijven, gesprekken en reacties samen op één plek. Je ontvangt hulp bij het opstellen van professionele mails en advies over elke vervolgstap. De beslissingen blijven altijd bij jou.</p>
               <div className="cta">
                 <Link href="/login" className="btn gold">Gratis beginnen</Link>
                 <a href="#zo-werkt-het" className="btn line">Bekijk de werkwijze</a>
@@ -76,7 +100,30 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="trust" aria-label="In het kort">
+          <ul className="trust-in">
+            <li><b>Speciaal voor het mbo</b><span>Afgestemd op opleiding, niveau en leerweg</span></li>
+            <li><b>Werkt met Gmail</b><span>Mails vanaf je eigen adres</span></li>
+            <li><b>Versleutelde opslag</b><span>Je gegevens blijven van jou</span></li>
+            <li><b>Gratis te proberen</b><span>Geen creditcard nodig</span></li>
+          </ul>
+        </section>
+
         <div className="wrap">
+          <section className="blok">
+            <header className="blok-kop"><p className="eyebrow dark">Waarom Stagejacht</p><h2>Minder zoeken, meer resultaat</h2></header>
+            <div className="vergelijk">
+              <div className="verg verg-zonder">
+                <h3>Zonder overzicht</h3>
+                <ul>{VERGELIJK.zonder.map((x) => <li key={x}><span className="verg-ic" aria-hidden="true">×</span>{x}</li>)}</ul>
+              </div>
+              <div className="verg verg-met">
+                <h3>Met Stagejacht</h3>
+                <ul>{VERGELIJK.met.map((x) => <li key={x}><span className="verg-ic"><Vink /></span>{x}</li>)}</ul>
+              </div>
+            </div>
+          </section>
+
           <section id="zo-werkt-het" className="blok">
             <header className="blok-kop"><p className="eyebrow dark">Werkwijze</p><h2>Van eerste contact tot stageplek</h2></header>
             <ol className="stappen">
@@ -89,7 +136,7 @@ export default function Home() {
           <section className="blok">
             <header className="blok-kop"><p className="eyebrow dark">Mogelijkheden</p><h2>Alles wat bij je zoektocht komt kijken</h2></header>
             <dl className="voordelen">
-              {VOORDELEN.map((v) => (<div key={v.t}><dt>{v.t}</dt><dd>{v.d}</dd></div>))}
+              {VOORDELEN.map((v) => (<div key={v.t}><span className="voordeel-ic"><Icoon d={IC[v.i]} /></span><dt>{v.t}</dt><dd>{v.d}</dd></div>))}
             </dl>
           </section>
         </div>
@@ -130,13 +177,17 @@ export default function Home() {
 
         <section className="slot">
           <div className="slot-in">
-            <h2>Breng je stagezoektocht in kaart</h2>
-            <p>Inloggen duurt een halve minuut. Daarna heb je direct overzicht.</p>
-            <Link href="/login" className="btn gold">Gratis beginnen</Link>
+            <h2>Begin vandaag aan een gestructureerde stagezoektocht</h2>
+            <p>Inloggen met je Google-account duurt een halve minuut. Daarna heb je direct overzicht.</p>
+            <div className="cta">
+              <Link href="/login" className="btn gold">Gratis beginnen</Link>
+              <a href="#prijzen" className="btn line">Abonnementen bekijken</a>
+            </div>
           </div>
         </section>
       </main>
       <SiteFooter />
+      <MobielCta />
     </>
   );
 }
