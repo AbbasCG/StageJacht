@@ -23,7 +23,7 @@ export default function HeroDemo() {
   const tegel = TEGELS.find((t) => t.g === g);
   return (
     <div className="demo" aria-label="Voorbeeld van het overzicht">
-      <div className="demo-top"><span className="demo-dot" /><span className="demo-dot" /><span className="demo-dot" /><span className="demo-title">Mijn Stagejacht</span></div>
+      <div className="demo-top"><span className="demo-dot" /><span className="demo-dot" /><span className="demo-dot" /><span className="demo-title">Overzicht stagezoektocht</span></div>
       <div className="demo-tiles" role="group" aria-label="Kies een groep">
         {TEGELS.map((t) => {
           const v = BEDRIJVEN.filter((b) => b.groep === t.g).length;
@@ -42,7 +42,7 @@ export default function HeroDemo() {
           </li>
         ))}
       </ul>
-      <p className="demo-note">Voorbeeld met verzonnen bedrijven. Tik op een tegel.</p>
+      <p className="demo-note">Voorbeeld met fictieve bedrijven. Selecteer een tegel om te filteren.</p>
     </div>
   );
 }

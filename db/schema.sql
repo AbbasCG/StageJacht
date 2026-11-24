@@ -109,7 +109,7 @@ create table if not exists bedrijven (
 );
 create index if not exists bedrijven_user_idx on bedrijven (user_id);
 
--- Maximaal 5 bedrijven met het gratis abonnement, afgedwongen in de database
+-- Maximaal 3 bedrijven met het gratis abonnement, afgedwongen in de database
 create or replace function check_bedrijven_limiet()
 returns trigger language plpgsql as $$
 declare
@@ -119,8 +119,8 @@ begin
   select plan, plan_tot into p from profiles where id = new.user_id;
   if p.plan = 'free' or p.plan_tot is null or p.plan_tot < now() then
     select count(*) into aantal from bedrijven where user_id = new.user_id;
-    if aantal >= 5 then
-      raise exception 'LIMIET_BEDRIJVEN' using hint = 'Met het gratis abonnement kun je 5 bedrijven bijhouden.';
+    if aantal >= 3 then
+      raise exception 'LIMIET_BEDRIJVEN' using hint = 'Met het gratis abonnement kun je 3 bedrijven bijhouden.';
     end if;
   end if;
   return new;

@@ -152,7 +152,7 @@ Open http://localhost:3000.
 
 Loop deze lijst na:
 - [ ] Inloggen met Google, welkomststappen, Gmail koppelen (met een testgebruiker)
-- [ ] Bedrijf toevoegen, bewerken, verwijderen. Bij Gratis kun je er niet meer dan 5 toevoegen
+- [ ] Bedrijf toevoegen, bewerken, verwijderen. Bij Gratis kun je er niet meer dan 3 toevoegen
 - [ ] Cv uploaden (PDF en Word), AI-advies, editor, PDF downloaden, "Gebruik dit cv voor mijn mails"
 - [ ] AI-mail schrijven, nakijken en **naar jezelf** versturen, met cv-bijlage
 - [ ] Reactie-check: stuur jezelf vanaf een ander adres een "afwijzing" en tik op Check mijn mail
