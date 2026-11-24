@@ -188,8 +188,6 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
                 )}
               </div>
             )}
-              </div>
-            )}
             <label className="check"><input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} disabled={!body} /> Ik heb de mail zelf gelezen. Namen, bedrijf en inhoud kloppen.</label>
             <div className="actions">
               <button className="btn" type="button" onClick={verstuur} disabled={!ok || !!bezig}>Versturen</button>
