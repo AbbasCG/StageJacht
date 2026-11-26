@@ -66,7 +66,8 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
 
   const avatar = user?.user_metadata?.avatar_url;
   const procent = plan.aiPerMaand ? Math.min(100, Math.round((usage / plan.aiPerMaand) * 100)) : 0;
-  const isBetaald = plan.id !== "free";
+  const isBetaald = plan.id !== "free" && plan.id !== "admin";
+  const isAdmin = plan.id === "admin";
 
   return (
     <section className="view">
@@ -86,10 +87,14 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
 
       <div className="box">
         <div className="toggle-row"><h2>Abonnement</h2><span className="tag">{plan.naam}</span></div>
-        <div>
-          <p className="note" style={{ marginBottom: 6 }}>AI-acties deze maand: {usage} van {plan.aiPerMaand}</p>
-          <div className="meter"><span style={{ width: procent + "%" }} /></div>
-        </div>
+        {isAdmin ? (
+          <p className="note">Dit is een beheerdersaccount. Alle functies zijn beschikbaar zonder limieten en zonder betaling. AI-acties deze maand: {usage}.</p>
+        ) : (
+          <div>
+            <p className="note" style={{ marginBottom: 6 }}>AI-acties deze maand: {usage} van {plan.aiPerMaand}</p>
+            <div className="meter"><span style={{ width: procent + "%" }} /></div>
+          </div>
+        )}
         {isBetaald && p.plan_tot && (
           <p className="note">
             {p.mollie_subscription_id
@@ -97,7 +102,7 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
               : `Opgezegd. ${plan.naam} blijft actief tot ${new Date(p.plan_tot).toLocaleDateString("nl-NL")}.`}
           </p>
         )}
-        <div className="plan-row">
+        {!isAdmin && <div className="plan-row">
           {[PLANS.free, PLANS.pro, PLANS.premium].map((pl) => (
             <div key={pl.id} className={"plan-card" + (pl.id === plan.id ? " current" : "")}>
               <b>{pl.naam}</b>
@@ -108,8 +113,8 @@ export default function Profiel({ dbc, user, profile, plan, usage, toast, loadPr
                 : <button className="btn small" type="button" onClick={() => kies(pl.id)} disabled={!!bezig}>{bezig === pl.id ? "Een moment geduld…" : isBetaald ? `Overstappen naar ${pl.naam}` : `${pl.naam} kiezen`}</button>}
             </div>
           ))}
-        </div>
-        <p className="note">De eerste betaling verloopt via iDEAL; daarna wordt het bedrag maandelijks automatisch afgeschreven via Mollie. Bij overstappen start een nieuwe periode. Maandelijks opzegbaar.</p>
+        </div>}
+        {!isAdmin && <p className="note">De eerste betaling verloopt via iDEAL; daarna wordt het bedrag maandelijks automatisch afgeschreven via Mollie. Bij overstappen start een nieuwe periode. Maandelijks opzegbaar.</p>}
         {isBetaald && p.mollie_subscription_id && (
           opzeggen ? (
             <div className="actions">Weet je het zeker? Je houdt {plan.naam} tot het einde van de betaalde maand.

@@ -29,6 +29,7 @@ Wat je nodig hebt: **Node.js 20 of nieuwer** en **Docker Desktop** (of een eigen
 ## Inloggen
 
 - **Zonder Google (snelst):** in `.env.local` staan `DEV_LOGIN=1` en `NEXT_PUBLIC_DEV_LOGIN=1`. Op de inlogpagina verschijnt dan een kader "Testlogin". Typ een e-mailadres en je bent binnen. Zet dit **nooit** aan op een echte server.
+- **Als beheerder:** zet je e-mailadres in `ADMIN_EMAILS` in `.env.local` en herstart `npm run dev`. Log je met dat adres in, dan heb je alle functies zonder limieten en zonder betaling.
 - **Met Google (nodig voor Gmail):** maak in Google Cloud een OAuth-client (zie HANDLEIDING stap 3) met als redirect-adres `http://localhost:3000/auth/callback`, en vul `GOOGLE_CLIENT_ID` en `GOOGLE_CLIENT_SECRET` in.
 
 ## Wat waar staat
