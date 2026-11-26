@@ -53,11 +53,11 @@ export const POST = metGebruiker(async (req, { user }) => {
   try {
     tekst = (await leesTekst(buf, ext)).trim();
   } catch {}
-  if (tekst.length < 40) return ok({ naam: file.name, gelezen: false, melding: "Je cv is opgeslagen, maar de tekst kon niet gelezen worden. Vul de editor zelf in." });
+  if (tekst.length < 40) return ok({ naam: file.name, gelezen: false, melding: "Je cv is opgeslagen, maar de tekst kon niet worden ingelezen. Vul de gegevens zelf in de editor in." });
 
   const huidig = profiel.cv || {};
   const alGevuld = huidig.profiel || (huidig.opleidingen || []).length || (huidig.werk || []).length;
-  if (alGevuld) return ok({ naam: file.name, gelezen: false, melding: "Je cv is opgeslagen. Je editor had al gegevens; die zijn niet overschreven." });
+  if (alGevuld) return ok({ naam: file.name, gelezen: false, melding: "Je cv is opgeslagen. De gegevens in de editor zijn niet overschreven." });
 
   const verbruik = await verbruikAi(user.id);
   if (!verbruik.ok) return ok({ naam: file.name, gelezen: false, melding: "Je cv is opgeslagen. " + verbruik.fout });

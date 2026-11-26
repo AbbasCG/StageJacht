@@ -118,6 +118,17 @@ Prijzen en limieten pas je aan in `lib/plans.js`.
 2. Vul alles in.
 3. Maak de versleutelsleutel aan met `npm run genkey` → `TOKEN_ENCRYPTION_KEY`.
 4. Kies voor `CRON_SECRET` een lange willekeurige tekst.
+5. Zet je eigen e-mailadres in `ADMIN_EMAILS` om een beheerdersaccount te krijgen (zie hieronder).
+
+### Beheerdersaccount
+
+Een beheerder heeft alle functies zonder limieten (onbeperkt bedrijven en AI-acties, mailcontrole, automatisch vacatures zoeken) en hoeft niet te betalen. Handig om alles te testen.
+
+1. Zet in `.env.local` op de server: `ADMIN_EMAILS=jouw@adres.nl` (meerdere adressen scheiden met een komma).
+2. Draai één keer `npm run db:init` (voegt het veld `is_admin` toe; bestaande gegevens blijven staan).
+3. Herstart de app en log in met dat Google-account. Bij Profiel staat dan "Beheerder".
+
+Rechten intrekken: haal het adres uit `ADMIN_EMAILS`, herstart de app; bij de volgende login is het account weer gewoon. Gebruikers kunnen zichzelf nooit beheerder maken: alleen de server zet dit veld.
 
 ---
 

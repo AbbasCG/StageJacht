@@ -33,7 +33,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
 
   async function opslaan(stil) {
     const { error } = await dbc.from("profiles").update({ cv, cvinfo: cvInfo(cv) }).eq("id", user.id);
-    if (error) { toast("Opslaan lukte niet"); return false; }
+    if (error) { toast("Het opslaan is niet gelukt. Probeer het opnieuw."); return false; }
     setOpgeslagen("Opgeslagen"); if (!stil) toast("Cv opgeslagen");
     loadProfile();
     return true;
@@ -41,26 +41,26 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
 
   async function upload(file, verwerk = true) {
     if (!file) return;
-    if (!/\.(pdf|docx)$/i.test(file.name)) { toast("Kies een PDF- of Word-bestand (.pdf of .docx)"); return; }
-    if (file.size > 3 * 1024 * 1024) { toast("Je cv is te groot (max 3 MB)"); return; }
+    if (!/\.(pdf|docx)$/i.test(file.name)) { toast("Kies een PDF- of Word-bestand (.pdf of .docx)."); return; }
+    if (file.size > 3 * 1024 * 1024) { toast("Het bestand is te groot. De maximale grootte is 3 MB."); return; }
     setBezig(verwerk ? "Je cv wordt opgeslagen en gelezen…" : "Je cv wordt opgeslagen…");
     try {
       const form = new FormData();
       form.append("bestand", file);
       const out = await api("/api/cv/upload" + (verwerk ? "" : "?verwerk=0"), form);
-      if (out.cv) { setCv({ ...LEEG, ...out.cv }); toast("Je cv staat in de editor. Laat de AI hem nu beoordelen!"); }
+      if (out.cv) { setCv({ ...LEEG, ...out.cv }); toast("Je cv is ingelezen. Je kunt het nu laten beoordelen."); }
       else toast(out.melding || "Cv opgeslagen");
       await loadProfile(); loadUsage();
     } catch (e) { toast(e.message); } finally { setBezig(""); if (fileRef.current) fileRef.current.value = ""; }
   }
 
   async function verwijderBestand() {
-    try { await api("/api/cv/upload", undefined, { method: "DELETE" }); toast("Cv-bestand verwijderd"); loadProfile(); } catch (e) { toast(e.message); }
+    try { await api("/api/cv/upload", undefined, { method: "DELETE" }); toast("Het cv-bestand is verwijderd"); loadProfile(); } catch (e) { toast(e.message); }
   }
 
   async function beoordeel() {
     if (opgeslagen === "Niet opgeslagen" && !(await opslaan(true))) return;
-    setBezig("De AI leest je cv…");
+    setBezig("Je cv wordt beoordeeld…");
     try {
       const out = await api("/api/cv/advies", { soort: "advies" });
       setAdvies(out.advies); loadUsage(); loadProfile();
@@ -69,11 +69,11 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
 
   async function verbeterProfiel() {
     if (opgeslagen === "Niet opgeslagen" && !(await opslaan(true))) return;
-    setBezig("De AI schrijft een nieuwe profieltekst…");
+    setBezig("Er wordt een nieuwe profieltekst opgesteld…");
     try {
       const out = await api("/api/cv/advies", { soort: "profieltekst" });
       wijzig({ ...cv, profiel: out.tekst }); loadUsage();
-      toast("Nieuwe profieltekst staat klaar. Lees hem en tik op Opslaan.");
+      toast("De nieuwe profieltekst staat klaar. Controleer deze en kies Opslaan.");
     } catch (e) { toast(e.message); } finally { setBezig(""); }
   }
 
@@ -126,7 +126,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
     <section className="view">
       <div>
         <h1>Mijn cv</h1>
-        <p className="sub">Upload je cv, laat de AI hem beoordelen en pas hem hier aan. Je nieuwe cv kun je downloaden en meesturen met je mails.</p>
+        <p className="sub">Upload je cv, ontvang een beoordeling met verbeterpunten en werk het hier bij. Het resultaat kun je downloaden en meesturen met je mails.</p>
       </div>
       {bezig && <div className="loading"><span className="spin" /><span>{bezig}</span></div>}
 
@@ -134,21 +134,21 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
         <h2>1. Je cv</h2>
         {p.cv_bestand ? (
           <div className="cvfile"><span>Cv voor je mails: <b>{p.cv_bestandsnaam}</b></span><button className="btn ghost small" type="button" onClick={verwijderBestand}>Verwijderen</button></div>
-        ) : <p className="note">Nog geen cv-bestand. Upload je cv, of vul de editor in en tik op "Gebruik dit cv voor mijn mails".</p>}
+        ) : <p className="note">Er is nog geen cv-bestand. Upload je cv, of vul de editor in en kies "Dit cv gebruiken voor mijn mails".</p>}
         <label className={"drop" + (over ? " over" : "")}
           onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragEnter={(e) => { e.preventDefault(); setOver(true); }}
           onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); upload(e.dataTransfer?.files?.[0]); }}>
           <input ref={fileRef} type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.docx" onChange={(e) => upload(e.target.files?.[0])} />
           <span className="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15V4" /><path d="m7.5 8.5 4.5-4.5 4.5 4.5" /><path d="M5 14.5v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" /></svg></span>
-          <b>{over ? "Laat los om te uploaden" : "Tik om je cv te kiezen"}</b>
-          <span className="note">PDF of Word, max 3 MB. Op de computer kun je het bestand ook hierheen slepen.</span>
+          <b>{over ? "Laat los om te uploaden" : "Selecteer je cv"}</b>
+          <span className="note">PDF of Word, maximaal 3 MB. Op een computer kun je het bestand ook hierheen slepen.</span>
           <span className="btn small">Bestand kiezen</span>
         </label>
       </div>
 
       <div className="box">
-        <div className="checkbar"><h2>2. Advies over je cv</h2><button className="btn small" type="button" onClick={beoordeel} disabled={!!bezig}>Laat AI mijn cv beoordelen</button></div>
-        {!advies ? <p className="note">Je krijgt een cijfer, wat al goed is en wat beter kan, met voorbeelden die je direct kunt overnemen.</p> : (
+        <div className="checkbar"><h2>2. Advies over je cv</h2><button className="btn small" type="button" onClick={beoordeel} disabled={!!bezig}>Cv laten beoordelen</button></div>
+        {!advies ? <p className="note">Je ontvangt een beoordeling met sterke punten en verbeterpunten, inclusief voorbeelden die je direct kunt overnemen.</p> : (
           <>
             <div className="score" style={{ "--c": kleur }}><b>{advies.cijfer ?? "?"}</b><span>{advies.oordeel}<br />Beoordeeld op {advies.datum}</span></div>
             {advies.sterk?.length > 0 && <div><h2 style={{ fontSize: "1rem", marginBottom: 6 }}>Wat al goed is</h2><ul className="adv-list">{advies.sterk.map((x, i) => <li key={i} style={{ "--c": "var(--s-yes)" }}>{x}</li>)}</ul></div>}
@@ -157,7 +157,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
             {advies.profiel_voorstel && (
               <>
                 <div className="advice"><b>Voorstel voor je profieltekst</b>{advies.profiel_voorstel}</div>
-                <div className="actions"><button className="btn small" type="button" onClick={() => { wijzig({ ...cv, profiel: advies.profiel_voorstel }); toast("Overgenomen. Vergeet niet op Opslaan te tikken."); }}>Neem deze profieltekst over</button></div>
+                <div className="actions"><button className="btn small" type="button" onClick={() => { wijzig({ ...cv, profiel: advies.profiel_voorstel }); toast("Overgenomen. Vergeet niet op te slaan."); }}>Neem deze profieltekst over</button></div>
               </>
             )}
           </>
@@ -169,7 +169,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
           <div className="checkbar"><h2>3. Cv aanpassen</h2><span className="note">{opgeslagen}</span></div>
           <p className="note">Naam, telefoon, e-mail en woonplaats komen uit je profiel.</p>
           <label className="q"><span>Profieltekst <em>(3-4 zinnen over wie je bent en wat je zoekt)</em></span><textarea value={cv.profiel} onChange={setVeld("profiel")} placeholder="Bijv. Gemotiveerde mbo-student die op zoek is naar een stage waar ik veel kan leren over …" /></label>
-          <div className="actions"><button className="btn ghost small" type="button" onClick={verbeterProfiel} disabled={!!bezig}>Laat AI mijn profieltekst verbeteren</button></div>
+          <div className="actions"><button className="btn ghost small" type="button" onClick={verbeterProfiel} disabled={!!bezig}>Profieltekst laten verbeteren</button></div>
 
           <div className="q"><span>Opleidingen</span></div>
           <div className="rep">
@@ -182,7 +182,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
                   <label className="q"><span>School</span><input value={o.school || ""} onChange={setRij("opleidingen", i, "school")} placeholder="Naam school" /></label>
                 </div>
               </div>
-            )) : <p className="note">Nog niets toegevoegd.</p>}
+            )) : <p className="note">Nog geen gegevens toegevoegd.</p>}
           </div>
           <div className="actions"><button className="btn ghost small" type="button" onClick={() => voegToe("opleidingen", { periode: "", opleiding: "", school: "" })}>+ Opleiding toevoegen</button></div>
 
@@ -195,10 +195,10 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
                   <label className="q"><span>Periode</span><input value={w.periode || ""} onChange={setRij("werk", i, "periode")} placeholder="2024 – nu" /></label>
                   <label className="q"><span>Functie</span><input value={w.functie || ""} onChange={setRij("werk", i, "functie")} placeholder="Bijv. vakkenvuller" /></label>
                   <label className="q"><span>Bedrijf</span><input value={w.bedrijf || ""} onChange={setRij("werk", i, "bedrijf")} placeholder="Naam bedrijf" /></label>
-                  <label className="q"><span>Wat deed je?</span><input value={w.taken || ""} onChange={setRij("werk", i, "taken")} placeholder="Bijv. klanten helpen en kassa" /></label>
+                  <label className="q"><span>Werkzaamheden</span><input value={w.taken || ""} onChange={setRij("werk", i, "taken")} placeholder="Bijv. klanten helpen en kassa" /></label>
                 </div>
               </div>
-            )) : <p className="note">Nog niets toegevoegd.</p>}
+            )) : <p className="note">Nog geen gegevens toegevoegd.</p>}
           </div>
           <div className="actions"><button className="btn ghost small" type="button" onClick={() => voegToe("werk", { periode: "", functie: "", bedrijf: "", taken: "" })}>+ Werkervaring toevoegen</button></div>
 
@@ -210,7 +210,7 @@ export default function Cv({ dbc, user, profile, toast, loadProfile, loadUsage, 
           <div className="actions">
             <button className="btn" type="submit">Opslaan</button>
             <button className="btn ghost" type="button" onClick={download}>Download als PDF</button>
-            <button className="btn ghost" type="button" onClick={gebruikVoorMails} disabled={!!bezig}>Gebruik dit cv voor mijn mails</button>
+            <button className="btn ghost" type="button" onClick={gebruikVoorMails} disabled={!!bezig}>Dit cv gebruiken voor mijn mails</button>
           </div>
         </form>
 

@@ -24,7 +24,7 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
     setBezig(true);
     try {
       const { aantal } = await api("/api/vacatures/zoek");
-      toast(aantal ? `${aantal} nieuwe stageplek${aantal > 1 ? "ken" : ""} gevonden` : "Geen nieuwe stageplekken gevonden");
+      toast(aantal ? `${aantal} nieuwe stageplek${aantal > 1 ? "ken" : ""} gevonden` : "Er zijn geen nieuwe stageplekken gevonden");
       loadVacatures();
     } catch (e) { toast(e.message); } finally { setBezig(false); }
   }
@@ -37,29 +37,29 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
       naam: v.bedrijf, plaats: v.plaats, link: v.link, contact: v.contact, email: v.email, tel: v.tel,
       status: "todo", datum: today(), notes: v.functie ? "Vacature: " + v.functie : null,
     });
-    if (error) { toast(String(error.message).includes("LIMIET_BEDRIJVEN") ? "Je lijst is vol (Gratis: 3 bedrijven). Upgrade voor meer." : "Toevoegen lukte niet"); return; }
+    if (error) { toast(String(error.message).includes("LIMIET_BEDRIJVEN") ? "Je hebt het maximum van 3 bedrijven bereikt. Kies Pro of Premium voor onbeperkt bedrijven." : "Het toevoegen is niet gelukt. Probeer het opnieuw."); return; }
     await dbc.from("vacatures").update({ toegevoegd: true }).eq("id", v.id).eq("user_id", user.id);
-    toast("Toegevoegd aan je lijst");
+    toast("De stageplek is toegevoegd aan je overzicht");
     loadVacatures(); loadBedrijven();
   }
 
   return (
     <section className="view">
       <div>
-        <h1>Vacatures voor jou</h1>
-        <p className="sub">Stageplekken van Stagemarkt en de rest van internet die passen bij je opleiding, niveau en leerweg, binnen {p.maxafstand || 15} km van huis.</p>
+        <h1>Passende stageplekken</h1>
+        <p className="sub">Stageplekken van Stagemarkt en andere bronnen die aansluiten bij je opleiding, niveau en leerweg, binnen {p.maxafstand || 15} km van je woonplaats.</p>
       </div>
       <div className="box">
         <div className="checkbar">
           <p className="note">
             {p.woonplaats
-              ? `Zoek zelf op Stagemarkt: niveau ${p.niveau || "?"}, ${p.leerweg || "BOL"}, rond ${p.woonplaats}.` + (p.crebocode ? "" : " Vul je crebocode in bij Profiel voor betere resultaten.")
-              : "Vul je woonplaats in bij Profiel, dan zoekt de link in jouw buurt."}
+              ? `Zelf zoeken op Stagemarkt: niveau ${p.niveau || "?"}, ${p.leerweg || "BOL"}, in de omgeving van ${p.woonplaats}.` + (p.crebocode ? "" : " Vul je crebocode in bij Profiel voor nauwkeurigere resultaten.")
+              : "Vul je woonplaats in bij Profiel om stageplekken in je omgeving te vinden."}
           </p>
           <a className="btn small ghost" href={stagemarktUrl(p)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Open Stagemarkt</a>
           {plan.vacatures
-            ? <button className="btn small" type="button" onClick={zoekNu} disabled={bezig}>{bezig ? "Zoeken…" : "Zoek nu"}</button>
-            : <button className="btn small" type="button" onClick={() => go("profiel")}>Automatisch zoeken (Pro)</button>}
+            ? <button className="btn small" type="button" onClick={zoekNu} disabled={bezig}>{bezig ? "Bezig met zoeken…" : "Nu zoeken"}</button>
+            : <button className="btn small" type="button" onClick={() => go("profiel")}>Automatisch zoeken met Pro</button>}
         </div>
       </div>
 
@@ -75,8 +75,8 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
         {!vacatures.length ? (
           <div className="empty">
             {plan.vacatures
-              ? `Nog geen nieuwe vacatures. De assistent zoekt ${plan.vacatures} op Stagemarkt naar plekken die bij jou passen.`
-              : "Met Pro of Premium zoekt de assistent automatisch passende stageplekken voor je."}
+              ? `Er zijn nog geen nieuwe stageplekken. Stagemarkt wordt ${plan.vacatures} doorzocht op plekken die bij je passen.`
+              : "Met Pro of Premium worden passende stageplekken automatisch voor je gezocht."}
           </div>
         ) : lijst.map((v) => (
           <article className="vac" key={v.id}>
@@ -87,16 +87,16 @@ export default function Vacatures({ dbc, user, profile, plan, vacatures, toast, 
             <div className="badges">
               {typeof v.afstand_km === "number" && <span className="tag">± {Math.round(v.afstand_km)} km van huis{v.reistijd ? " · " + v.reistijd : ""}</span>}
               {v.erkend === true && <span className="tag ok">Erkend leerbedrijf</span>}
-              {v.erkend === false && <span className="tag warn">Niet als leerbedrijf gevonden, check bij school</span>}
+              {v.erkend === false && <span className="tag warn">Erkenning niet gevonden; controleer dit bij je school</span>}
               {v.bron && <span className="tag src">Bron: {v.bron}</span>}
             </div>
             <div className="meta">{[v.functie, v.plaats, v.vergoeding, v.start && "Start: " + v.start].filter(Boolean).map((x) => <span key={x}>{x}</span>)}</div>
             <div className="meta">{[v.contact, v.email, v.tel].filter(Boolean).map((x) => <span key={x}>{x}</span>)}</div>
             {v.waarom && <p className="why">{v.waarom}</p>}
             <div className="actions">
-              {v.email && <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", vacature: v })}>Sollicitatiemail laten schrijven</button>}
-              <button className="btn ghost small" type="button" onClick={() => zetInLijst(v)}>Zet in mijn lijst</button>
-              <button className="btn ghost small" type="button" onClick={() => verberg(v)}>Niet interessant</button>
+              {v.email && <button className="btn small" type="button" onClick={() => openComposer({ soort: "new", vacature: v })}>Sollicitatiemail laten opstellen</button>}
+              <button className={"btn small" + (v.email ? " ghost" : "")} type="button" onClick={() => zetInLijst(v)}>+ Toevoegen aan overzicht</button>
+              <button className="btn ghost small" type="button" onClick={() => verberg(v)}>Niet relevant</button>
               {safeUrl(v.link) && <a href={safeUrl(v.link)} target="_blank" rel="noopener noreferrer">Bekijk {v.bron ? "op " + v.bron : "vacature"}</a>}
             </div>
           </article>

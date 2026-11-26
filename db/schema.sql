@@ -61,6 +61,8 @@ create table if not exists profiles (
   laatste_vacaturecheck timestamptz,
   created_at timestamptz not null default now()
 );
+-- Beheerders: alle functies zonder limieten. Wordt bij elke login door de server gezet op basis van ADMIN_EMAILS.
+alter table profiles add column if not exists is_admin boolean not null default false;
 
 -- Profiel automatisch aanmaken bij een nieuwe gebruiker
 create or replace function handle_new_user()
@@ -116,7 +118,10 @@ declare
   p record;
   aantal int;
 begin
-  select plan, plan_tot into p from profiles where id = new.user_id;
+  select plan, plan_tot, is_admin into p from profiles where id = new.user_id;
+  if p.is_admin then
+    return new;
+  end if;
   if p.plan = 'free' or p.plan_tot is null or p.plan_tot < now() then
     select count(*) into aantal from bedrijven where user_id = new.user_id;
     if aantal >= 3 then

@@ -12,6 +12,7 @@ export const POST = metGebruiker(async (req, { user }) => {
   if (!plan || plan.id === "free") return fout("Onbekend abonnement.");
 
   const profiel = await profielVan(user.id);
+  if (profiel.is_admin) return fout("Een beheerdersaccount heeft al alle functies. Een abonnement is niet nodig.");
   const huidig = effectivePlan(profiel);
   if (huidig.id === plan.id && profiel.mollie_subscription_id) return fout("Je hebt dit abonnement al.");
 

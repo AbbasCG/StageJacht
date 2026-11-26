@@ -36,7 +36,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
   const stap = fase === "gegevens" ? 0 : ok ? 3 : body ? 2 : 1;
 
   async function schrijf(gegevens = g) {
-    setBezig("De AI schrijft je mail…"); setReview(null); setOk(false);
+    setBezig("Je mail wordt opgesteld…"); setReview(null); setOk(false);
     try {
       const out = await api("/api/mail/draft", { soort, bedrijfId: bedrijf?.id, vacatureId: vacature?.id, cvMee, gegevens, zoekt, toevoegingen: gegevens?.extra ? [gegevens.extra] : [] });
       if (soort !== "reply") setSubject(out.onderwerp);
@@ -51,15 +51,15 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
   async function bevestigGegevens(e) {
     e.preventDefault();
     const schoon = Object.fromEntries(Object.entries(g).map(([k, v]) => [k, String(v || "").trim()]));
-    if (!schoon.naam) { toast("Vul je naam in"); return; }
-    if (!schoon.telefoon && !schoon.email) { toast("Vul je telefoonnummer of e-mail in, zodat het bedrijf je kan bereiken"); return; }
-    if (schoon.email && !EMAIL.test(schoon.email)) { toast("Je e-mailadres klopt niet"); return; }
+    if (!schoon.naam) { toast("Vul je naam in."); return; }
+    if (!schoon.telefoon && !schoon.email) { toast("Vul je telefoonnummer of e-mailadres in, zodat het bedrijf contact met je kan opnemen."); return; }
+    if (schoon.email && !EMAIL.test(schoon.email)) { toast("Het e-mailadres is ongeldig."); return; }
     setG(schoon);
     if (opslaanInProfiel) {
       const gewijzigd = Object.fromEntries(VELDEN.filter((k) => (profile?.[k] ?? "") !== schoon[k]).map((k) => [k, schoon[k]]));
       if (Object.keys(gewijzigd).length) {
         const { error } = await dbc.from("profiles").update(gewijzigd).eq("id", user.id);
-        if (error) toast("Opslaan in je profiel lukte niet, maar je mail gebruikt je nieuwe gegevens wel");
+        if (error) toast("Je profiel kon niet worden bijgewerkt; de mail gebruikt wel je nieuwe gegevens.");
         else loadProfile?.();
       }
     }
@@ -68,7 +68,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
   }
 
   async function nakijken() {
-    setBezig("De AI kijkt je mail na…");
+    setBezig("Je mail wordt gecontroleerd…");
     try {
       const out = await api("/api/mail/review", { naar: to, onderwerp: subject, tekst: body, bedrijfNaam: naamDoel, contact: doel.contact, gegevens: g });
       const haken = /\[[^\]]+\]/.test(body);
@@ -80,7 +80,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
 
   async function verstuur() {
     if (!ok) return;
-    if (/\[[^\]]+\]/.test(body)) { toast("Vul eerst alles tussen [vierkante haken] in"); return; }
+    if (/\[[^\]]+\]/.test(body)) { toast("Vul eerst alle tekst tussen [vierkante haken] in."); return; }
     setBezig("Versturen…");
     try {
       let bijlage;
@@ -111,7 +111,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
 
         {fase === "gegevens" ? (
           <form className="gegevens" onSubmit={bevestigGegevens}>
-            <p className="note">Controleer je gegevens. De AI gebruikt precies wat hier staat, dus vul aan wat ontbreekt en verbeter wat niet klopt.</p>
+            <p className="note">Controleer je gegevens. De mail wordt opgesteld op basis van wat hier staat; vul ontbrekende informatie aan en corrigeer waar nodig.</p>
             <div className="grid2">
               <label className="q"><span>Naam</span><input value={g.naam} onChange={setVeld("naam")} required autoComplete="name" /></label>
               <label className="q"><span>Telefoon</span><input value={g.telefoon} onChange={setVeld("telefoon")} type="tel" autoComplete="tel" placeholder="06 …" /></label>
@@ -121,9 +121,9 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
               <label className="q"><span>School</span><input value={g.school} onChange={setVeld("school")} /></label>
               <label className="q"><span>Niveau</span><select value={g.niveau} onChange={setVeld("niveau")}>{["4", "3", "2", "1"].map((n) => <option key={n} value={n}>Niveau {n}</option>)}</select></label>
               <label className="q"><span>Leerweg</span><select value={g.leerweg} onChange={setVeld("leerweg")}><option value="BOL">BOL</option><option value="BBL">BBL</option></select></label>
-              <label className="q span2"><span>Wanneer kun je beginnen?</span><input value={g.beschikbaar} onChange={setVeld("beschikbaar")} placeholder="Bijv. per direct" /></label>
+              <label className="q span2"><span>Beschikbaar vanaf</span><input value={g.beschikbaar} onChange={setVeld("beschikbaar")} placeholder="Bijv. per direct" /></label>
               <label className="q span2"><span>Over mij <em>(wie ben je, wat wil je leren?)</em></span><textarea style={{ minHeight: 70 }} value={g.overmij} onChange={setVeld("overmij")} /></label>
-              <label className="q span2"><span>Waar ben je goed in? <em>(sterke punten, vaardigheden)</em></span><textarea style={{ minHeight: 60 }} value={g.sterk} onChange={setVeld("sterk")} placeholder="Bijv. ik leg dingen rustig uit, ik ben handig met computers" /></label>
+              <label className="q span2"><span>Sterke punten <em>(kwaliteiten en vaardigheden)</em></span><textarea style={{ minHeight: 60 }} value={g.sterk} onChange={setVeld("sterk")} placeholder="Bijv. ik leg dingen rustig uit, ik ben handig met computers" /></label>
               <label className="q span2"><span>Ervaring, projecten en bijbanen</span><textarea style={{ minHeight: 60 }} value={g.ervaring} onChange={setVeld("ervaring")} placeholder="Bijv. schoolproject, bijbaan, vrijwilligerswerk" /></label>
             </div>
             <div className="extra-box">
@@ -134,7 +134,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
             {ontbreekt.length > 0 && <p className="hint">Nog niet ingevuld: {ontbreekt.join(", ")}. Hoe meer je invult, hoe persoonlijker en beter je mail.</p>}
             <label className="check"><input type="checkbox" checked={opslaanInProfiel} onChange={(e) => setOpslaanInProfiel(e.target.checked)} /> Wijzigingen ook opslaan in mijn profiel</label>
             <div className="actions">
-              <button className="btn" type="submit">Klopt, laat de AI schrijven</button>
+              <button className="btn" type="submit">Gegevens kloppen, mail opstellen</button>
               <button className="btn ghost" type="button" onClick={onClose}>Annuleren</button>
             </div>
           </form>
@@ -144,8 +144,8 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
             {bezig && <div className="loading"><span className="spin" /><span>{bezig}</span></div>}
             <details className="zoekt-box" open={!zoekt}>
               <summary>Wat zoekt dit bedrijf? <span className="note">{zoekt ? "(onderzocht)" : "(nog niet onderzocht)"}</span></summary>
-              <textarea style={{ minHeight: 90 }} value={zoekt} onChange={(e) => setZoekt(e.target.value)} placeholder="Plak hier wat het bedrijf zoekt (uit de vacature of hun website). Tik daarna op Opnieuw laten schrijven." />
-              <p className="note">De AI laat je mail hierop aansluiten. Het wordt bewaard bij dit bedrijf.</p>
+              <textarea style={{ minHeight: 90 }} value={zoekt} onChange={(e) => setZoekt(e.target.value)} placeholder="Plak hier wat het bedrijf zoekt (uit de vacature of van de website). Kies daarna Opnieuw laten opstellen." />
+              <p className="note">Je mail wordt hierop afgestemd. Deze informatie wordt bij het bedrijf bewaard.</p>
             </details>
             {soort !== "reply" && <label className="q"><span>Aan</span><input type="email" value={to} onChange={wijzig(setTo)} placeholder="naam@bedrijf.nl" /></label>}
             {soort !== "reply" && <label className="q"><span>Onderwerp</span><input value={subject} onChange={wijzig(setSubject)} /></label>}
@@ -157,12 +157,12 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
               <input type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.docx,.png,.jpg" onChange={(e) => { setExtraBestand(e.target.files?.[0] || null); setOk(false); }} />
             </label>
             <div className="actions">
-              <button className="btn ghost small" type="button" onClick={() => schrijf()} disabled={!!bezig}>Opnieuw laten schrijven</button>
-              <button className="btn ghost small" type="button" onClick={nakijken} disabled={!!bezig || !body}>Laat AI nakijken</button>
+              <button className="btn ghost small" type="button" onClick={() => schrijf()} disabled={!!bezig}>Opnieuw laten opstellen</button>
+              <button className="btn ghost small" type="button" onClick={nakijken} disabled={!!bezig || !body}>Mail laten controleren</button>
             </div>
             {review && (
               <div className={"review " + (!review.verbeteringen.length && !review.opmerkingen.length ? "ok" : "warn")}>
-                {!review.verbeteringen.length && !review.opmerkingen.length ? <><b>De AI vond geen fouten.</b> Lees hem zelf nog even door en vink het vakje aan.</> : (
+                {!review.verbeteringen.length && !review.opmerkingen.length ? <><b>Er zijn geen fouten gevonden.</b> Lees de mail zelf nog door en bevestig hieronder.</> : (
                   <>
                     {review.verbeteringen.length > 0 && (
                       <>
@@ -179,15 +179,13 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
                           let nieuw = body, n = 0;
                           review.verbeteringen.forEach((f) => { if (f.aan && nieuw.includes(f.van)) { nieuw = nieuw.replace(f.van, f.naar); n++; } });
                           setBody(nieuw); setReview(null); setOk(false);
-                          toast(n ? `${n} verbetering${n > 1 ? "en" : ""} toegepast. Verder is je mail niet veranderd.` : "Niets toegepast");
+                          toast(n ? `${n} verbetering${n > 1 ? "en" : ""} toegepast. Verder is je mail niet veranderd.` : "Er is niets aangepast");
                         }}>Aangevinkte verbeteringen toepassen</button></div>
                       </>
                     )}
-                    {review.opmerkingen.length > 0 && <><b>Check zelf even</b><ul>{review.opmerkingen.map((p, i) => <li key={i}>{p}</li>)}</ul></>}
+                    {review.opmerkingen.length > 0 && <><b>Controleer zelf</b><ul>{review.opmerkingen.map((p, i) => <li key={i}>{p}</li>)}</ul></>}
                   </>
                 )}
-              </div>
-            )}
               </div>
             )}
             <label className="check"><input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} disabled={!body} /> Ik heb de mail zelf gelezen. Namen, bedrijf en inhoud kloppen.</label>
@@ -195,7 +193,7 @@ export default function Composer({ soort, bedrijf, vacature, profile, user, dbc,
               <button className="btn" type="button" onClick={verstuur} disabled={!ok || !!bezig}>Versturen</button>
               <button className="btn ghost" type="button" onClick={onClose} disabled={bezig === "Versturen…"}>Annuleren</button>
             </div>
-            <p className="note">Er wordt pas iets verstuurd als jij op Versturen tikt. De mail gaat vanaf je eigen Gmail.</p>
+            <p className="note">De mail wordt pas verzonden nadat je op Versturen hebt gedrukt, vanaf je eigen Gmail-adres.</p>
           </div>
         )}
       </div>

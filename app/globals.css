@@ -241,3 +241,50 @@ img { max-width: 100%; }
 .google-btn { border-radius: 10px; }
 .legal h1 { font-size: 2rem; }
 .hero2 .eyebrow { font-size: 12.5px; color: var(--goud); max-width: none; }
+
+/* ─── Landingspagina: aantrekkelijker en overtuigender ─── */
+.trust { background: var(--surface); border-bottom: 1px solid var(--line); }
+.trust-in { list-style: none; margin: 0 auto; max-width: 1120px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 24px; padding-block: 22px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 860px) { .trust-in { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.trust li { display: grid; gap: 2px; padding-left: 14px; border-left: 3px solid var(--goud); }
+.trust b { font-size: 15px; color: var(--blauw-diep); }
+.trust span { font-size: 13.5px; color: var(--muted); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .trust b { color: var(--ink); } }
+
+.vergelijk { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 760px) { .vergelijk { grid-template-columns: minmax(0, 1fr); } }
+.verg { border-radius: 14px; padding: 24px; display: grid; gap: 14px; align-content: start; border: 1px solid var(--line); background: var(--surface); }
+.verg h3 { margin: 0; font-family: var(--f-serif); font-weight: 600; font-size: 1.25rem; }
+.verg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.verg li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; line-height: 1.5; }
+.verg-ic { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+.verg-ic svg { width: 14px; height: 14px; }
+.verg-zonder { color: var(--muted); }
+.verg-zonder .verg-ic { background: color-mix(in srgb, var(--s-no) 12%, transparent); color: var(--s-no); }
+.verg-met { border: 2px solid var(--blauw); box-shadow: 0 22px 44px -28px rgb(10 29 63 / .5); }
+.verg-met .verg-ic { background: color-mix(in srgb, var(--s-yes) 14%, transparent); color: var(--s-yes); }
+
+.voordelen > div { display: grid; grid-template-columns: 44px 1fr; column-gap: 16px; align-items: start; }
+.voordelen dt, .voordelen dd { grid-column: 2; }
+.voordeel-ic { grid-row: 1 / span 2; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--soft); color: var(--blauw); }
+
+.stappen li { transition: transform .15s, box-shadow .15s; }
+.stappen li:hover, .voordelen > div:hover { box-shadow: 0 16px 34px -22px rgb(10 29 63 / .45); }
+.voordelen > div { transition: box-shadow .15s; }
+.slot .cta { margin-top: 6px; }
+
+.mobiel-cta { display: none; }
+@media (max-width: 640px) {
+  .mobiel-cta { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--blauw-diep) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -8px 24px -12px rgb(0 0 0 / .5); }
+  .mobiel-cta .btn { width: 100%; padding: 13px 16px; font-size: 16px; text-decoration: none; display: flex; justify-content: center; }
+  .site-foot { padding-bottom: 72px; }
+}
+@media (prefers-reduced-motion: reduce) { .stappen li, .voordelen > div { transition: none; } }
+@media (max-width: 640px) {
+  .mobiel-cta { transform: translateY(110%); transition: transform .2s ease-out; }
+  .mobiel-cta.aan { transform: none; }
+  .hero2 .cta .btn { flex: 1 1 100%; }
+}
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) { .mobiel-cta { transition: none; } }
